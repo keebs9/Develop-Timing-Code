@@ -1,7 +1,8 @@
 // The purpose of this program is to develop a method of timing pressure cycles,
 // initially within parameters set as constants by me in the program. The specific
 // development today is tming a single pressure window and displaying the current
-// and last timing cycles for this window (achieved 23-01-2019 @ 15:22)
+// and last timing cycles for this window (achieved 23-01-2019 @ 15:22). I'm now going
+// to change the rectangle mode to 3 CORNERS mode rather than corner, width & height.
 
 import processing.serial.Serial; // imports the additional functionality of the serial command set
 Serial myport; // create a serial object
@@ -27,10 +28,6 @@ int uScale = 50; // defines the top of the vertical axis scale
 float pressure = 0; // converts the digital input to a pressure based on the scale
 
 void setup() {
-  upper[0]=50;
-  lower[0]=45;
-  time[0]=0;
-  active[0]=false;
   String[] portsList = Serial.list();
   String arduinoPort = portsList[portsList.length-1]; // sets the COM port to highest active
   myport = new Serial(this, arduinoPort, 115200); // "this" is default parent

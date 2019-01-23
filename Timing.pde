@@ -5,18 +5,23 @@ int[] start = new int[3]; // stores the window start time for the 3 timing windo
 boolean[] active = new boolean[3]; // stores the current status of the timing window
 
 void timing() {
-  if ((pressure >= lower[0]) && (pressure <= upper[0])) {
-    if (active[0] == false) {
-      start[0] = millis();
+  if (mousePressed) {
+      stroke(255, 0, 0); // just a debugging line //<>//
+    }
+  for (byte i =0; i<3; i++) {
+    if ((pressure >= lower[i]) && (pressure <= upper[i])) {
+      if (active[i] == false) {
+        start[i] = millis();
+      } else {
+        time[i] = millis()-start[i];
+      }
+      active[i] = true;
     } else {
-      time[0] = millis()-start[0];
+      if (active[i]) {
+        active[i] = false;
+      }
     }
-    active[0] = true;
-  } else {
-    if (active[0]) {
-      active[0] = false;
-      time[0] = millis()-start[0];
-    }
+    //println(active[0] + " , last duration: " + time[0] + " current pressure: " + pressure + " ypos: " + yPos);
   }
-  println(active[0] + " , last duration: " + time[0] + " current pressure: " + pressure + " ypos: " + yPos);
+  println(pressure, active[0], active[1], active [2]);
 }

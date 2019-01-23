@@ -2,8 +2,9 @@ void drawScales() {
   strokeCap(SQUARE);
   stroke(10); // sets the colour of the centre line and scales
   line(lMargin-1, centre+tMargin, rMargin, centre+tMargin); // horizontal line half way up
-  line(lMargin-2, tMargin, lMargin-2, bMargin); // draws left hand scale
-  line(rMargin, tMargin, rMargin, bMargin); // draws right hand scale
+  line(lMargin-2, tMargin-1, lMargin-2, bMargin+1); // draws left hand scale
+  line(rMargin, tMargin-1, rMargin, bMargin+1); // draws right hand scale
+  
   stroke(0, 0, 230); // sets the colour of the graticules
   line(lMargin-7, tMargin, lMargin-2, tMargin); // draws upper left graticule
   line(rMargin, tMargin, rMargin+5, tMargin); // draws upper right graticule
@@ -23,5 +24,4 @@ void drawScales() {
   line(rMargin, (plotHeight*0.875)+tMargin, rMargin+5, (plotHeight*0.875)+tMargin); // draws 7/8 right graticule
   line(lMargin-7, plotHeight+tMargin, lMargin-2, plotHeight+tMargin); // draws lower left graticule
   line(rMargin, plotHeight+tMargin, rMargin+5, plotHeight+tMargin); // draws lower right graticule
-  strokeCap(ROUND);
 }
