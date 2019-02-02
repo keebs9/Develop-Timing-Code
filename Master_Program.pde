@@ -1,8 +1,6 @@
 // The purpose of this program is to develop a method of timing pressure cycles,
 // initially within parameters set as constants by me in the program. The specific
-// development today is tming a single pressure window and displaying the current
-// and last timing cycles for this window (achieved 23-01-2019 @ 15:22). I'm now going
-// to change the rectangle mode to 3 CORNERS mode rather than corner, width & height.
+// development today is adding button selection and ignore transients option.
 
 import processing.serial.Serial; // imports the additional functionality of the serial command set
 Serial myport; // create a serial object
@@ -26,6 +24,8 @@ int clrWidth = 40; // this is the width of the clear box in front of the trace
 int lScale = 0; // defines the bottom of the vertical axis scale
 int uScale = 50; // defines the top of the vertical axis scale
 float pressure = 0; // converts the digital input to a pressure based on the scale
+int transTime = 100; // defines the duration in ms of transient timings which are to be ignored
+boolean ignore = true; // a variable to record if transients are being ignored (tidier than using the button's active variable)
 
 void setup() {
   String[] portsList = Serial.list();
@@ -37,6 +37,7 @@ void setup() {
   // problems I was having, overlapping lines of same colour were being liased making them
   // visibly different shades.
   size(1350, 700); // sets the size of the graphics window AS SIZE won't accept variables!
+  defineButtons(); // initialises the buttons
   screenSetup(); // initialises the display e.g., size, background etc.
 }
 
@@ -47,8 +48,6 @@ void serialEvent(Serial myport) { // the code to read the actual data
   dataStr = myport.readStringUntil( '\n' ); // read the whole line
   if (dataStr != null ) {
     dataStr = trim(dataStr); // trim function removed any extra spaces
-    // println(inString); // prints to the terminal to prove acquisition (suspended)
-
     dataInt = int(dataStr);
     pressure = int(map(dataInt, 0, 1023, lScale, uScale)); // maps the pressure to the scale
     yPos = dataInt/2; // scales the input to a 512 pixel high output
@@ -58,7 +57,15 @@ void serialEvent(Serial myport) { // the code to read the actual data
 
 void draw() 
 {
-  drawPlot();
+  if (mousePressed) whatSelected(); // if the left mouse button is being pressed
+  else {
+    for (int i=0; i<nButtons; i++)  {
+      bPress[i] = false; // the button isn't being pressed
+      bHeld[i] = false; // the button isn't being held
+    }
+  }
+  println(ignore);
+  drawPlot(); 
   drawTiming(); // this must be called from within draw NOT serial event (as it has graphics functions)
 
   xPos ++; // increment current X position by 1, advancing the plot across the screen
