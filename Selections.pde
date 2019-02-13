@@ -1,4 +1,4 @@
-void whatSelected() { //<>// //<>//
+void whatSelected() { //<>//
   int xM = mouseX; // read the mouse X position into a variable
   int yM = mouseY; // read the mouse Y position into a variable
   for (byte i = 0; i <= (nButtons -1); i++) { // repeat for each button (index starts at zero, hence -1
