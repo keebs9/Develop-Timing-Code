@@ -11,13 +11,13 @@ void screenSetup() {
   fill(plotFill);
   rect(lMargin, tMargin, rMargin, bMargin);
   drawScales();
-  textSize(14); // sets the font sizr of the timing-window text label
+  textSize(14); // sets the font size of the timing-window text label
   fill(200, 20, 20); // sets the colour of the timing-window text label
 
   for (byte i =0; i<3; i++) {
     time[i]=0;
     active[i]=false;
-    text("Window" + (i+1) +": ", rMargin+20, tMargin+20+(75*i));
+    text("Window" + (i+1) +": ", timeXpos, tMargin+20+(75*i));
   }
 
   drawButtons();
