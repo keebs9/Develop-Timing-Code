@@ -7,7 +7,7 @@ Serial myport; // create a serial object
 
 int progWidth = 1350; // the width of the entire program window
 int progHeight = 700; // the height of the entire program window 
-int plotWidth = 1000; // this is the width of the display window
+int plotWidth = 800; // this is the width of the display window
 int plotHeight = 513; // this is the height of the display, 513 is due to thickness of trace
 int centre = plotHeight/2; // this is partly so I can check this value in the debugger
 int lMargin = 40; // the width & so the position of the left margin
@@ -16,13 +16,11 @@ int tMargin = 147; // the height & so the position of the top margin
 int bMargin = tMargin + plotHeight; // the position of the bottom margin (from 0)
 
 int yPos;
-int xPos = 0 - lMargin; // sets the initial X position of the trace off screen
+int xPos = 0 - lMargin; // sets the initial X position of the trace off the viewable screen
 int oldY;
 int oldX = 0;
 int clrWidth = 40; // this is the width of the clear box in front of the trace
 
-int lScale = 0; // defines the bottom of the vertical axis scale
-int uScale = 50; // defines the top of the vertical axis scale
 float pressure = 0; // converts the digital input to a pressure based on the scale
 int transTime = 100; // defines the duration in ms of transient timings which are to be ignored
 boolean ignore = true; // a variable to record if transients are being ignored (tidier than using the button's active variable)
