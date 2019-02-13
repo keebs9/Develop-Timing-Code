@@ -1,5 +1,5 @@
-float lScale = -40; // defines the bottom of the vertical axis scale (shall be definable)
-float uScale = 40; // defines the top of the vertical axis scale (shall be definable)
+float lScale = 00; // defines the bottom of the vertical axis scale (shall be definable)
+float uScale = 80; // defines the top of the vertical axis scale (shall be definable)
 byte nDivisions = 8; // creates a variable for the number of on-screen divisions
 float gapNum; // creates a variable to hold the gap/spacing in the numerical value of the scale divisions
 String units = "cmH2O"; // sets the default pressure units

@@ -1,9 +1,15 @@
-int[] upper = new int[3]; // stores the upper limit of the 3 timing windows //<>//
-int[] lower = new int[3]; // stores the lower limit of the 3 timing windows
+float[] upper = new float[3]; // stores the upper limit of the 3 timing windows
+float[] lower = new float[3]; // stores the lower limit of the 3 timing windows
 int[] time = new int[3]; // stores the time in ms for the 3 timing windows
 int[] start = new int[3]; // stores the window start time for the 3 timing windows
 boolean[] active = new boolean[3]; // stores the current status of the timing window
 boolean[] ignoring = new boolean[3]; // stores the current status of the timing window
+int[] valR = new int[3]; // stores the timing window colour - R (red) component
+int[] valG = new int[3]; // stores the timing window colour - G (green) component
+int[] valB = new int[3]; // stores the timing window colour - B (blue) component
+int[] darkR = new int[3]; // stores the darker line colour - R (red) component
+int[] darkG = new int[3]; // stores the darker line colour - G (green) component
+int[] darkB = new int[3]; // stores the darker line colour - B (blue) component
 
 void timing() {
   for (byte i =0; i<3; i++) { // repeat for the number of pressure windows (change to variable)

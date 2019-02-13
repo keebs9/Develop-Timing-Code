@@ -18,8 +18,15 @@ void drawPlot() {
         line(xPos-1+lMargin, centre+tMargin, lMargin+plotWidth, centre+tMargin); // reinstates portion of centre line
       }
     }
-    stroke(10, 180, 10); // sets the drawing colour (set back to deep red)
-    strokeCap(ROUND);
+    
+    // sets the drawing colour based on whether the trace is in a measurement window or not
+    for (byte i=0; i<3; i++){ // repeat 3 times, once for each pressure window
+      if (active[i]) { // if the current window number is active then... (only 1 window can be active at any time)
+        stroke(darkR[i], darkG[i], darkB[i]); // set the drawing colours to that of the active window 
+      }
+    }
+    
+    strokeCap(ROUND); // this has to be round for this function otherwise there are many gaps, constant pressure lines disappear
     line(oldX+lMargin, plotHeight-oldY+tMargin, xPos+lMargin, plotHeight-yPos+tMargin); // draw plot line from last to current position
     strokeCap(SQUARE);
   }

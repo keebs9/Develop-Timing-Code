@@ -64,7 +64,7 @@ void draw()
   }
   println(ignore);
   drawPlot(); 
-  drawTiming(); // this must be called from within draw NOT serial event (as it has graphics functions)
+  updateTimingData(); // this must be called from within draw NOT serial event (as it has graphics functions)
 
   xPos ++; // increment current X position by 1, advancing the plot across the screen
   if (xPos >=plotWidth) { // if the x position is at the right edge of the plot window
