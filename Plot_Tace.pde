@@ -21,7 +21,7 @@ void drawPlot() {
     
     // sets the drawing colour based on whether the trace is in a measurement window or not
     for (byte i=0; i<3; i++){ // repeat 3 times, once for each pressure window
-      if (active[i]) { // if the current window number is active then... (only 1 window can be active at any time)
+      if (winActive[i]) { // if the current window number is active then... (only 1 window can be active at any time)
         stroke(darkR[i], darkG[i], darkB[i]); // set the drawing colours to that of the active window 
       }
     }

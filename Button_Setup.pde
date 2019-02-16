@@ -6,11 +6,11 @@ byte shadow = 2; // sets the offset of the selected button shadow
 // create the button variables
 int[] bX1 = new int[nButtons]; // holds the top left X coordinate of all the buttons
 int[] bY1 = new int[nButtons]; // holds the top left Y coordinate of all the buttons
-int[] bX2 = new int[nButtons]; // holds the top left X coordinate of all the buttons
-int[] bY2 = new int[nButtons]; // holds the top left Y coordinate of all the buttons
-boolean[] bPress = new boolean[nButtons]; // holds the current status of the buttons
-boolean[] bHeld = new boolean[nButtons]; // holds the current status of the buttons
-boolean[] bActive = new boolean[nButtons]; // holds the current status of the buttons
+int[] bX2 = new int[nButtons]; // holds the bottom right X coordinate of all the buttons
+int[] bY2 = new int[nButtons]; // holds the bottom right Y coordinate of all the buttons
+boolean[] bPress = new boolean[nButtons]; // bPress means cursor is over the button & left button is being pressed
+boolean[] bHeld = new boolean[nButtons]; // bHeld means you've actioned the button but kept the mouse pressed (prevents rapid toggling)
+boolean[] bActive = new boolean[nButtons]; // bActive means the buttons function is applied
 String[] bText = new String[nButtons]; // holds the text of all of the buttons
 
 // assign values to the buttons
