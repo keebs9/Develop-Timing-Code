@@ -57,12 +57,16 @@ void draw()
 {
   if (mousePressed) whatSelected(); // if the left mouse button is being pressed
   else {
-    for (int i=0; i<nButtons; i++)  {
+    for (byte i=0; i<nButtons; i++)  { // repeat for the number of buttons
       bPress[i] = false; // the button isn't being pressed
       bHeld[i] = false; // the button isn't being held
     }
+    for (byte i=0; i<3; i++) { // repeat for all 3 pressure windows
+      upperDrag[i] = false; // marks the upper line as not being held
+      lowerDrag[i] = false; // marks the lower line as not being held
+    }
   }
-  println(ignore);
+  
   drawPlot(); 
   updateTimingData(); // this must be called from within draw NOT serial event (as it has graphics functions)
 
