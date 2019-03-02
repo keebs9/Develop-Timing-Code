@@ -16,7 +16,9 @@ void screenSetup() {
   fill(200, 20, 20); // sets the colour of the timing-window text label
 
   for (byte i =0; i<3; i++) { // repeat 3 times as there are 3 pressure windows
-    time[i]=0;
+    msTime[i]=0;
+    count[i]=0;
+    average[i]=0;
     winActive[i]=false;
   }
 
@@ -28,22 +30,28 @@ void screenSetup() {
 }
 
 void defineWindows() {
-  
+
   // defines pressure monitoring window 1 defaults (shall be customisable)
   upper[0] = uScale; // sets the top of the 1st windows to full scale
   lower[0] = uScale - gapNum; // sets the bottom of the 1st window to 1 division down
-  valR[0] = 252; valG[0] = 187; valB[0] = 7; // sets the colours for this window
-  
+  valR[0] = 252; 
+  valG[0] = 187; 
+  valB[0] = 7; // sets the colours for this window
+
   // defines pressure monitoring window 2 defaults (shall be customisable)
   upper[1] = ((abs(lScale) + abs(uScale)) / 2) + (0.5 * gapNum); // sets the top of the 2nd windows to mid-point + 1/2 a division
   lower[1] = ((abs(lScale) + abs(uScale)) / 2) - (0.5 * gapNum); // sets the top of the 2nd windows to mid-point - 1/2 a division
-  valR[1] = 0; valG[1] = 177; valB[1] = 216; // sets the colours for this window
-  
+  valR[1] = 0; 
+  valG[1] = 177; 
+  valB[1] = 216; // sets the colours for this window
+
   // defines pressure monitoring window 3 defaults (shall be customisable)
   upper[2]=lScale + gapNum; // sets the top of the 3rd window to 1 division up
   lower[2]=lScale; // sets the bottom of the 3rd windows to minimum scale value
-  valR[2] = 255; valG[2] = 99; valB[2] = 223; // sets the colours for this window
-  
+  valR[2] = 255; 
+  valG[2] = 99; 
+  valB[2] = 223; // sets the colours for this window
+
   // defines generic window settings
   for (byte i = 0; i<3; i++) {
     ignoring[i] = false;
@@ -53,6 +61,7 @@ void defineWindows() {
     darkG[i] = darken(valG[i], 40); // runs the function below which returns a darker shade of the colour element G
     darkB[i] = darken(valB[i], 40); // runs the function below which returns a darker shade of the colour element B
   }
+  setWindowHeight(); // calls the function which sets the data windows heights & ensures they don't clash
 }
 
 void drawButtons() {
@@ -82,9 +91,31 @@ void drawButtons() {
   }
 }
 
-int darken(int colourIn, int strength){
-  if (colourIn>= strength){
+int darken(int colourIn, int strength) {
+  if (colourIn>= strength) {
     colourIn = colourIn - strength;
   } else colourIn = 0;
   return colourIn;
+}
+
+void setWindowHeight() {
+  float overlap; // used to store the gap between the 2 windows
+  // set the vertical positions of the 3 movable windows & ensure they don't overlap
+  winTopY[0] = map(upper[0]-((upper[0]-lower[0])/2), lScale, uScale, plotHeight, 0) + tMargin-17;
+  winTopY[1] = map(upper[1]-((upper[1]-lower[1])/2), lScale, uScale, plotHeight, 0) + tMargin-17;
+  winTopY[2] = map(upper[2]-((upper[2]-lower[2])/2), lScale, uScale, plotHeight, 0) + tMargin-17;
+
+  winBotY[0] = winTopY[0] +24;
+  winBotY[1] = winTopY[1] +24;
+  winBotY[2] = winTopY[2] +24;
+
+  //check for overlaps and if so adjust the positions of windows 0 & 3 relative to centre window 1
+  if ((winBotY[0]+51) > winTopY[1]) { // if the bottom of the 0-win overlaps the top of the 1-win then...
+    winBotY[0] = winTopY[1]-52; // move the bottom of 0-win to a fixed distance above the top of 1-win
+    winTopY[0] = winBotY[0]-24; // set the bottom of 0-win to 24 below its top
+  }
+  if ((winBotY[1]+51) > winTopY[2]) { // if the bottom of the 1-win overlaps the top of the 2-win then...
+    winTopY[2] = winBotY[1]+52; // move the bottom of 2-win up to a fixed distance below the bottom of 1-win
+    winBotY[2] = winTopY[2]+24; // set the bottom of 0-win to 24 below its top
+  }
 }
