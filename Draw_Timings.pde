@@ -1,10 +1,10 @@
-int timeXpos = rMargin+200; // defines the X position of the timing data box
+int timeXpos = rMargin+220; // defines the X position of the timing data box
 int timeWidth = 90; // defines the width of the timing data box 
 int timeShade = 255; // defines the shade of the timing data box
 int textWidth = 140; // defines the width of the timing data caption box e.g., "Window 1"
 int textShade = 230; // defines the shafe of the timing data caption box
 
-int winXpos = rMargin+110; // defines the position for the adjustable timing window
+int winXpos = timeXpos-90; // defines the position for the adjustable timing window
 int winWidth = 70; // defines the width of the adjsuatble timing window
 float y1; // used to record the upper Y position of the adjustable timing window (tidies the code)
 float y2; // used to record the lower Y position of the adjustable timing window (tidies the code)
@@ -75,7 +75,7 @@ void drawMovableWindows() { // this is used when only the timing needs to be upd
   // clear the area of the adjustable windows and redraw them
   fill(bgFill); // set the fill colour to the background colour
   stroke(bgFill); // set the line colour to the background colour
-  rect (winXpos, tMargin, winXpos+winWidth, bMargin); // blanks the whole area that could have windows drawn in 
+  rect (winXpos, tMargin, winXpos+winWidth, bMargin+20); // blanks the whole area that could have windows drawn in 
   
   for (byte i=0; i<3; i++) { // repeat 3 times, once for each timing window possible
     
