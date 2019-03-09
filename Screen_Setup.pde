@@ -39,8 +39,8 @@ void defineWindows() {
   valB[0] = 7; // sets the colours for this window
 
   // defines pressure monitoring window 2 defaults (shall be customisable)
-  upper[1] = ((abs(lScale) + abs(uScale)) / 2) + (0.5 * gapNum); // sets the top of the 2nd windows to mid-point + 1/2 a division
-  lower[1] = ((abs(lScale) + abs(uScale)) / 2) - (0.5 * gapNum); // sets the top of the 2nd windows to mid-point - 1/2 a division
+  upper[1] = ((lScale + uScale) / 2) + (0.5 * gapNum); // sets the top of the 2nd windows to mid-point + 1/2 a division
+  lower[1] = ((lScale + uScale) / 2) - (0.5 * gapNum); // sets the top of the 2nd windows to mid-point - 1/2 a division
   valR[1] = 0; 
   valG[1] = 177; 
   valB[1] = 216; // sets the colours for this window
@@ -65,7 +65,7 @@ void defineWindows() {
 }
 
 void drawButtons() {
-  for (byte i =0; i<(nButtons); i++) { // repeat for number of buttons
+  for (byte i =0; i<nButtons; i++) { // repeat for number of buttons
     if (!bActive[i]) { // if the button isn't selected draw a shadow
       fill(20); // sets the fill colour of the shadow
       stroke(20);
@@ -98,8 +98,7 @@ int darken(int colourIn, int strength) {
   return colourIn;
 }
 
-void setWindowHeight() {
-  float overlap; // used to store the gap between the 2 windows
+void setWindowHeight() { // sets the 3 timing windows to default values based on the current scale limits
   // set the vertical positions of the 3 movable windows & ensure they don't overlap
   winTopY[0] = map(upper[0]-((upper[0]-lower[0])/2), lScale, uScale, plotHeight, 0) + tMargin-17;
   winTopY[1] = map(upper[1]-((upper[1]-lower[1])/2), lScale, uScale, plotHeight, 0) + tMargin-17;
