@@ -21,18 +21,18 @@ void whatSelected() {
 
 void checkButtonPress() { // is a button being pressed?
   butPress = false;
-  for (byte i = 0; i < (nButtons); i++) { // repeat for each button
+  for (byte i = 0; i < (tButtons); i++) { // repeat for each button
     if ((xM >= bX1[i] && xM <= bX2[i]) && (yM >= bY1[i] && yM <= bY2[i])) {
       
       // if buttons 0-3 and not in calibration mode, or higher buttons but in calibration mode...
-      if ((i<4 && !bActive[3]) || (i>3 && bActive[3])) { 
+      if ((i<4 && calStage == -1) || (i>3 && (calStage == 0 || calStage == 7))) {  //<>//
         bPress[i] = true; // set the current button to pressed
         actionButtons(); // process the button selection
         butPress = true;
       }
     }
     // if any buttons are alraedy held (but the mouse is no longer over them) then set butPress to true
-    if (bHeld[i]) butPress =true;
+    if (bHeld[i]) butPress = true;
   }
 }
 
@@ -135,7 +135,7 @@ void resetTiming(byte winNum){
 void actionButtons() {
   // **specifically deals with the first 2 buttons which are interlocked**
   // if button 0 or 1 are exclusively pressed and weren't previously 
-  if (!bHeld[2] && ((bPress[0] && !bHeld[0] && !bHeld[1]) || (bPress[1] && !bHeld[1] && !bHeld[0]))) {
+  if (!bHeld[2]  && !bHeld[3] && ((bPress[0] && !bHeld[0] && !bHeld[1]) || (bPress[1] && !bHeld[1] && !bHeld[0]))) {
     if (!bActive[0] && bPress[0]) { // if button 0 wasn't active and is now pressed...
       bActive[0] = true; // set button 0 to active
       bActive[1] = false; // set btton 1 to inactive
@@ -159,30 +159,35 @@ void actionButtons() {
 
   // specifically deals with button 3 which determines if transients are ignored
   // if button 2 is exclusively pressed but wasn't previously
-  if (bPress[2] && !bHeld[2] && !bHeld[0] && !bHeld[1]) {
+  if (bPress[2] && !bHeld[2] && !bHeld[0] && !bHeld[1] && !bHeld[3]) {
     bActive[2] = !bActive[2]; // invert the button2 Held
     ignore = bActive[2]; // set the ignore flag to the button state i.e., True or False
     bHeld[2] = true; // set the button Held to true meaning it was already pressed and actioned
   }
   
   // specifically deals with button 4 which will put the program into calibration mode
-  if (bPress[3] && !bActive[3]) { // if the button has been clicked & not already in calibration mode...
+  // if button 3 is exclusively pressed & not already in calibration mode...
+  if (bPress[3] && !bActive[3] && !bHeld[0] && !bHeld[1] && !bHeld[2]) {
     bActive[3] = true; // set button 3 as active, this is used to determine that the program is in calibration mode
-    calStage = 1; // sets the progress of calibration to one
+    calStage = 0; // sets the progress of calibration to one
     clearWinArea(); // blanks out all the timing data
     clearPlotArea(); // clears the plot area ready to be used by the calibration routine
   }
-  drawButtons(); // redraw the buttons (as they may have changed state)
+  
+  // specifically deals with the calibration buttons (4-12)
+  for (byte j=4; j < tButtons; j++) { // repeat for all the calibration buttons
+    if (bPress[j] && !bHeld[j]) { // if the button was pressed...
+      units = bText[j]; // sets the current unit text to that of the button
+      bHeld[j] = true; // set the button Held to true meaning it was already pressed and actioned
+      calStage++;
+    }
+  }
+  
+  Buttons(); // redraw the buttons (as they may have changed state)
 }
 
 void clearWinArea() { // clear the area where timing windows and timing data is displayed
   fill(bgFill); // set the fill colour to the background colour of the screen
   stroke(bgFill); // set the line colour to the background colour of the screen
   rect (winXpos, 0, progWidth, progHeight); // blanks the whole area that could have windows & timings drawn in
-}
-
-void clearPlotArea() { // clear the whole plot area
-  fill(plotFill); // set the fill colour to the background colour of the plot
-  stroke(plotFill); // set the line colour to the background colour of the plot
-  rect (lMargin, tMargin, rMargin-2, bMargin); // blanks the whole plot area
 }

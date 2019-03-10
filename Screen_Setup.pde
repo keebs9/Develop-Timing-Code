@@ -23,7 +23,7 @@ void screenSetup() {
   }
 
   defineWindows();
-  drawButtons();
+  Buttons();
   drawDataCaptions();
   drawMovableWindows();
   updateTimingData();
@@ -64,8 +64,14 @@ void defineWindows() {
   setWindowHeight(); // calls the function which sets the data windows heights & ensures they don't clash
 }
 
-void drawButtons() {
-  for (byte i =0; i<nButtons; i++) { // repeat for number of buttons
+void Buttons() {
+  if (!bActive[3]) drawButtons(0,3); // if not in calibraiton mode draw normal buttons 
+  else if (calStage <7) drawButtons(4,7); // draw the calibration buttons
+  else if (calStage == 7) drawButtons(8,12); // draw the file operation buttons
+}
+
+void drawButtons(int lo, int hi) {
+  for (int i = lo; i < hi + 1; i++) { // repeat for number of buttons
     if (!bActive[i]) { // if the button isn't selected draw a shadow
       fill(20); // sets the fill colour of the shadow
       stroke(20);
