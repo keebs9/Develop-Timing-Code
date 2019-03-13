@@ -32,22 +32,22 @@ void screenSetup() {
 void defineWindows() {
 
   // defines pressure monitoring window 1 defaults (shall be customisable)
-  upper[0] = uScale; // sets the top of the 1st windows to full scale
-  lower[0] = uScale - gapNum; // sets the bottom of the 1st window to 1 division down
+  upper[0] = uScale[aC]; // sets the top of the 1st windows to full scale
+  lower[0] = uScale[aC] - gapNum; // sets the bottom of the 1st window to 1 division down
   valR[0] = 252; 
   valG[0] = 187; 
   valB[0] = 7; // sets the colours for this window
 
   // defines pressure monitoring window 2 defaults (shall be customisable)
-  upper[1] = ((lScale + uScale) / 2) + (0.5 * gapNum); // sets the top of the 2nd windows to mid-point + 1/2 a division
-  lower[1] = ((lScale + uScale) / 2) - (0.5 * gapNum); // sets the top of the 2nd windows to mid-point - 1/2 a division
+  upper[1] = ((lScale[aC] + uScale[aC]) / 2) + (0.5 * gapNum); // sets the top of the 2nd windows to mid-point + 1/2 a division
+  lower[1] = ((lScale[aC] + uScale[aC]) / 2) - (0.5 * gapNum); // sets the top of the 2nd windows to mid-point - 1/2 a division
   valR[1] = 0; 
   valG[1] = 177; 
   valB[1] = 216; // sets the colours for this window
 
   // defines pressure monitoring window 3 defaults (shall be customisable)
-  upper[2]=lScale + gapNum; // sets the top of the 3rd window to 1 division up
-  lower[2]=lScale; // sets the bottom of the 3rd windows to minimum scale value
+  upper[2]=lScale[aC] + gapNum; // sets the top of the 3rd window to 1 division up
+  lower[2]=lScale[aC]; // sets the bottom of the 3rd windows to minimum scale value
   valR[2] = 255; 
   valG[2] = 99; 
   valB[2] = 223; // sets the colours for this window
@@ -106,9 +106,9 @@ int darken(int colourIn, int strength) {
 
 void setWindowHeight() { // sets the 3 timing windows to default values based on the current scale limits
   // set the vertical positions of the 3 movable windows & ensure they don't overlap
-  winTopY[0] = map(upper[0]-((upper[0]-lower[0])/2), lScale, uScale, plotHeight, 0) + tMargin-17;
-  winTopY[1] = map(upper[1]-((upper[1]-lower[1])/2), lScale, uScale, plotHeight, 0) + tMargin-17;
-  winTopY[2] = map(upper[2]-((upper[2]-lower[2])/2), lScale, uScale, plotHeight, 0) + tMargin-17;
+  winTopY[0] = map(upper[0]-((upper[0]-lower[0])/2), lScale[aC], uScale[aC], plotHeight, 0) + tMargin-17;
+  winTopY[1] = map(upper[1]-((upper[1]-lower[1])/2), lScale[aC], uScale[aC], plotHeight, 0) + tMargin-17;
+  winTopY[2] = map(upper[2]-((upper[2]-lower[2])/2), lScale[aC], uScale[aC], plotHeight, 0) + tMargin-17;
 
   winBotY[0] = winTopY[0] +24;
   winBotY[1] = winTopY[1] +24;

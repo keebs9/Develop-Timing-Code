@@ -80,8 +80,8 @@ void drawMovableWindows() { // this is used when only the timing needs to be upd
   for (byte i=0; i<3; i++) { // repeat 3 times, once for each timing window possible
     
     // map the window position in relation to the scale based on the window limits
-    y1 = map(upper[i], lScale, uScale, plotHeight, 0) + tMargin;
-    y2 = map(lower[i], lScale, uScale, plotHeight, 0) + tMargin;
+    y1 = map(upper[i], lScale[aC], uScale[aC], plotHeight, 0) + tMargin;
+    y2 = map(lower[i], lScale[aC], uScale[aC], plotHeight, 0) + tMargin;
     
     if (i==2 && nWin==2) { // if drawing the 3rd window but only 2 are active
       fill(grey); // set colour to greyed out

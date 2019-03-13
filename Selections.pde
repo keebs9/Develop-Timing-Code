@@ -25,7 +25,7 @@ void checkButtonPress() { // is a button being pressed?
     if ((xM >= bX1[i] && xM <= bX2[i]) && (yM >= bY1[i] && yM <= bY2[i])) {
       
       // if buttons 0-3 and not in calibration mode, or higher buttons but in calibration mode...
-      if ((i<4 && calStage == -1) || (i>3 && (calStage == 0 || calStage == 7))) {  //<>//
+      if ((i<4 && calStage == -1) || (i>3 && (calStage == 0 || calStage == 7))) { 
         bPress[i] = true; // set the current button to pressed
         actionButtons(); // process the button selection
         butPress = true;
@@ -40,8 +40,8 @@ void checkWindowDrag() { // is one of the pressure window limits being adjusted?
   lineDrag = false;  
   for (byte i = 0; i <nWin; i++) { // repeat for each active pressure window
     // map the pressure values to graphical heights, note pressure and graphical values are inverse of each other
-    upLinePos = map(upper[i], lScale, uScale, bMargin, tMargin); 
-    lowLinePos = map(lower[i], lScale, uScale, bMargin, tMargin);
+    upLinePos = map(upper[i], lScale[aC], uScale[aC], bMargin, tMargin); 
+    lowLinePos = map(lower[i], lScale[aC], uScale[aC], bMargin, tMargin);
 
     // **look for upper line selections**     
 
@@ -67,11 +67,11 @@ void checkWindowDrag() { // is one of the pressure window limits being adjusted?
       if (upLinePos > lowLinePos-5) upLinePos = lowLinePos-5;
 
       // stop the 2nd and 3rd upper margins going above the next winows lower margin
-      compare = map(lower[constrain(i-1, 0, 2)], lScale, uScale, bMargin, tMargin); // constrain to within array limits
+      compare = map(lower[constrain(i-1, 0, 2)], lScale[aC], uScale[aC], bMargin, tMargin); // constrain to within array limits
       if (i>0 && upLinePos < compare+5) upLinePos = compare+5;
 
       // map the value from graphical back to pressure, noting that they are the inverse of each other
-      upLinePos = map(upLinePos, tMargin, bMargin, uScale, lScale);
+      upLinePos = map(upLinePos, tMargin, bMargin, uScale[aC], lScale[aC]);
 
       upper[i] = upLinePos; // assign the pressure based upper limit
       msTime[i] = 0; // reset the last cycle time as it is void due to new monitoring window
@@ -108,11 +108,11 @@ void checkWindowDrag() { // is one of the pressure window limits being adjusted?
       if (lowLinePos < upLinePos+5) lowLinePos = upLinePos+5;
 
       // stop the 1st and 2nd lower margins going below the next winows upper margin
-      compare = map(upper[constrain(i+1, 0, 2)], lScale, uScale, bMargin, tMargin); // constrain to within array limits
+      compare = map(upper[constrain(i+1, 0, 2)], lScale[aC], uScale[aC], bMargin, tMargin); // constrain to within array limits
       if (i<2 && lowLinePos > compare-5) lowLinePos = compare-5;
 
       // map the value from graphical back to pressure, noting that they are the inverse of each other
-      lowLinePos = map(lowLinePos, tMargin, bMargin, uScale, lScale);
+      lowLinePos = map(lowLinePos, tMargin, bMargin, uScale[aC], lScale[aC]);
 
       lower[i] = lowLinePos; // assign the pressure based lower limit
       resetTiming(i); // reset the current window timings as they're now invalid due to new parameters
@@ -174,12 +174,33 @@ void actionButtons() {
     clearPlotArea(); // clears the plot area ready to be used by the calibration routine
   }
   
-  // specifically deals with the calibration buttons (4-12)
-  for (byte j=4; j < tButtons; j++) { // repeat for all the calibration buttons
-    if (bPress[j] && !bHeld[j]) { // if the button was pressed...
-      units = bText[j]; // sets the current unit text to that of the button
-      bHeld[j] = true; // set the button Held to true meaning it was already pressed and actioned
-      calStage++;
+  // specifically deals with the calibration buttons (4-7)
+  if (calStage == 0) { // if acquiring the pressure units during calibration stage 0...
+    for (byte j=nButtons; j < tButtons; j++) { // repeat for all the calibration buttons
+      if (bPress[j] && !bHeld[j]) { // if the button was pressed...
+        units[nConfigs-1] = bText[j]; // sets the current unit text to that of the button //<>//
+        bActive[j] = true; // set the button press to active
+        bHeld[j] = true; // set the button Held to true meaning it was already pressed and actioned
+        calStage++;
+      }
+    }
+  } else if (calStage == 7) { // if queryinf whether the data should be saved during calibration stage 7...
+     for (int j = nButtons + cButtons; j < tButtons; j++) { // repeat for all the calibration buttons
+      if (bPress[j] && !bHeld[j]) { // if the button was pressed...
+        bActive[j] = true; // set the button press to active
+        bHeld[j] = true; // set the button Held to true meaning it was already pressed and actioned
+        if (j<tButtons) { // if not the "don't save" button which has been pressed then...
+          minRaw[j- nButtons - cButtons] = minRaw[nConfigs-1]; // set the selected dataset to the new value  //<>//
+          maxRaw[j- nButtons - cButtons] = maxRaw[nConfigs-1]; // set the selected dataset to the new value
+          lScale[j- nButtons - cButtons] = lScale[nConfigs-1]; // set the selected dataset to the new value
+          uScale[j- nButtons - cButtons] = uScale[nConfigs-1]; // set the selected dataset to the new value
+          trueLo[j- nButtons - cButtons] = trueLo[nConfigs-1]; // set the selected dataset to the new value
+          trueHi[j- nButtons - cButtons] = trueHi[nConfigs-1]; // set the selected dataset to the new value
+          saveCalData(); // save the data unless the button pressed was "don't save"
+        }
+        aC = j; // sets the active config to either the dataset selected or the temporary set stored in set 5
+        calStage++; // move on to the next calibration stage
+      }
     }
   }
   
