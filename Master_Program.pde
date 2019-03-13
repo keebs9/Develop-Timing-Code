@@ -29,6 +29,7 @@ float pressure = 0; // converts the digital input to a pressure based on the sca
 int transTime = 100; // defines the duration in ms of transient timings which are to be ignored
 boolean ignore = true; // a variable to record if transients are being ignored (tidier than using the button's active variable)
 
+byte nConfigs = 5; // holds the number of active configs, note that the last profile [5] holds the new config during calibration
 int msStart; // records the start time of the program
 int startDelay = 1650; // defines the initial delay before starting measurement (avoids blip as Arduino resets)
 
@@ -43,6 +44,8 @@ void setup() {
   // problems I was having, overlapping lines of same colour were being liased making them
   // visibly different shades.
   size(1366, 768); // sets the size of the graphics window AS SIZE won't accept variables!
+  
+  loadCalData(); // test line to create file
   defineButtons(); // initialises the buttons
   screenSetup(); // initialises the display e.g., size, background etc.
 }
@@ -90,11 +93,10 @@ void serialEvent(Serial myport) { // the code to read the actual data
   if (dataStr != null ) { // if there is some data and so isn't null...
     dataStr = trim(dataStr); // trim function removed any extra spaces
     dataInt = int(dataStr); // converts the text based number to a numerical value, an integer
-    pressure = (map(dataInt, minRaw, maxRaw, trueLo, trueHi)); // maps the pressure to the scale
+    pressure = (map(dataInt, minRaw[aC], maxRaw[aC], trueLo[aC], trueHi[aC])); // maps the pressure to the scale
     // *** this would be a good place to flag over/under limit ***
-    pressure = constrain(pressure, lScale, uScale); // constrain pressure to scale limits
-    yPos = int(map(pressure, lScale, uScale, 0, plotHeight-2)); // scales the input to the plot
-    println("yPos: " + yPos + ", dataInt: " + dataInt + ", Pres: " + pressure + ", lS: " + lScale + ", uS: " + uScale); // development line
+    pressure = constrain(pressure, lScale[aC], uScale[aC]); // constrain pressure to scale limits
+    yPos = int(map(pressure, lScale[aC], uScale[aC], 0, plotHeight-2)); // scales the input to the plot
     timing();
   }
 }

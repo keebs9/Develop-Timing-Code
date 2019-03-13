@@ -3,8 +3,9 @@ boolean suggested = false; // shows if a number has already been suggested
 boolean high = true; // states whether the current calibration is high (true) or low (false)
 int blueShade = 140; // sets the shade of blue used to display the calibration instructional text 
 int calStage = -1; // used to track what stage of calibration the user is at
-float minRaw = 0; // used to store the minimum raw calibration value (0 by default)
-float maxRaw = 1023; // used to store the maximum raw calibration value (1023 by default)
+int saveNum; 
+float[] minRaw = new float[nConfigs]; // used to store the minimum raw calibration value (0 by default)
+float[] maxRaw = new float[nConfigs]; // used to store the maximum raw calibration value (1023 by default)
 String kbInput = ""; // stores the string of text characters that the user has entered
 float kbVal = 0; // holds the numerical value of the user-inputted number
 String topBot = ""; // holds the contextual wording for the calibration text e.g., minimum or maximum
@@ -41,7 +42,6 @@ void drawCalScreen() { // a routine to take the user through a calibration proce
 }
 
 void setUnits() {
-  calStage = 7; //temporary line to progress to save
   Buttons(); // draw the calibration buttons
   textSize(30); // sets the font size for the calibration screen text
   fill(0, 0, blueShade);
@@ -65,12 +65,12 @@ void requestPressure(){
 
 void getPressure(){
   high = calStage == 5; // high is true if at calibtaion stage 5, if stage 2 then high is false (low calibration)
-  if (!high) minRaw = dataInt; // sets minRaw to value of the raw data input e.g., 0..1023 when calibrating lower scale
-  else maxRaw = dataInt; // sets maxRaw to value of the raw data input e.g., 0..1023 when calibrating upper scale
+  if (!high) minRaw[nConfigs-1] = dataInt; // sets minRaw to value of the raw data input e.g., 0..1023 when calibrating lower scale
+  else maxRaw[nConfigs-1] = dataInt; // sets maxRaw to value of the raw data input e.g., 0..1023 when calibrating upper scale
   
   // set the font colour & print the text
   fill(0, 0, blueShade);
-  text("Enter the value of the applied pressure" + '\n' + "in " + units + ": ", lMargin+30, tMargin+40);
+  text("Enter the value of the applied pressure" + '\n' + "in " + units[nConfigs-1] + ": ", lMargin+30, tMargin+40);
   if (kbInput.length()>0) { // if therer is text to display..
     text(kbInput + '_', lMargin+200, tMargin+87); // display the user-entered value
     kbVal = float(kbInput); // convert the text of the value to a number
@@ -81,8 +81,8 @@ void getPressure(){
 void setScaleLimits() {
   high = calStage == 6; // high is true if at calibtaion stage 6, if stage 3 then high is false (low calibration)
   if (!suggested) { // if a number has not yet been suggested then suggest one
-    if (!high) trueLo = kbVal; // assign the current value to the true lower calibration pressure
-    else trueHi = kbVal; // assign the current value to the true upper calibration pressure
+    if (!high) trueLo[nConfigs-1] = kbVal; // assign the current value to the true lower calibration pressure
+    else trueHi[nConfigs-1] = kbVal; // assign the current value to the true upper calibration pressure
     kbVal = suggestValue(kbVal); // suggest a wider scale limit based on the magnitude of the value entered
     kbInput = str(kbVal); // assigns the current value to the keyboard entry string
     suggested=true;
@@ -99,12 +99,13 @@ void setScaleLimits() {
     text(kbInput + '_', lMargin+200, tMargin+150); // display the suggested or edited value
   }
   kbVal = float(kbInput); // convert the text of the value to a number
-  if (!high) lScale = kbVal; // assign the current value to the lower scale limit
-  else uScale = kbVal; // assign the current value to the upper scale limit
+  if (!high) lScale[nConfigs-1] = kbVal; // assign the current value to the lower scale limit
+  else uScale[nConfigs-1] = kbVal; // assign the current value to the upper scale limit
 }
 
 void askSaveData(){
   Buttons(); // draw the calibration buttons
+  listCalData(); // prints the text desriptions of the currently saved configs over the buttons 
   textSize(30); // sets the font size for the calibration screen text
   fill(0, 0, blueShade);
   text("Please select a profile to save the data to", lMargin+30, tMargin+40);
@@ -113,7 +114,11 @@ void askSaveData(){
 }
 
 void exitCalibration() {
-  calStage = -1; // clears the current calibration stage //<>//
+  for (int i=nButtons+cButtons; i<tButtons; i++) {
+    if (bActive[i]) saveNum = i-nButtons+cButtons;
+  }
+   //<>//
+  calStage = -1; // clears the current calibration stage
   bActive[3] = false; // this is used as a flag for the program being in calibration mode & is set to false
   xPos = 0; // resets the x position of the trace to zero to start drawing a new trace
   oldX = 0; // resets the previous x vale to zero too so no spurious line is drawn
@@ -128,6 +133,8 @@ void exitCalibration() {
   drawDataCaptions(); // redraw the timing window captions 
   drawMovableWindows(); // redraw the movable timing windows
   updateTimingData(); // redraw the timings
+  
+  for (byte i=nButtons; i<tButtons; i++) bActive[i] = false; // set all the calibration buttons to inactive
 }
 
 float suggestValue(float val) { // a function which returns a suggested appopriate scale value

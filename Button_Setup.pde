@@ -64,7 +64,7 @@ void defineButtons(){
   bX2[4] = lMargin + 260; // bottom right corner (x)
   bY2[4] = tMargin + 230; // bottom right corner (y)
   bText[4] = "cmH2O"; // holds the unit text
-  units = bText[4]; // sets the currently displayed units to cmH2O
+  units[aC] = bText[4]; // sets the currently displayed units to cmH2O
  
   // define button six (mBar)
   bX1[5] = rMargin - 260; // top left corner (x)
@@ -90,41 +90,41 @@ void defineButtons(){
 // assigns data to the save/load data buttons
   
   // define button nine (profile 1)
-  bX1[8] = lMargin + 160; // top left corner (x)
-  bY1[8] = tMargin + 200; // top left corner (y)
+  bX1[8] = lMargin + 100; // top left corner (x)
+  bY1[8] = tMargin + 160; // top left corner (y)
   bX2[8] = lMargin + 260; // bottom right corner (x)
-  bY2[8] = tMargin + 230; // bottom right corner (y)
+  bY2[8] = tMargin + 280; // bottom right corner (y)
   bText[8] = "Set A";  // holds the unit text
   
   // define button ten (profile 2)
   bX1[9] = rMargin - 260; // top left corner (x)
-  bY1[9] = tMargin + 200; // top left corner (y)
-  bX2[9] = rMargin - 160; // bottom right corner (x)
-  bY2[9] = tMargin + 230; // bottom right corner (y)
+  bY1[9] = tMargin + 160; // top left corner (y)
+  bX2[9] = rMargin - 100; // bottom right corner (x)
+  bY2[9] = tMargin + 280; // bottom right corner (y)
   bText[9] = "Set B"; // holds the unit text
   
   // define button eleven (profile 3)
-  bX1[10] = lMargin + 160; // top left corner (x)
-  bY1[10] = tMargin + 300; // top left corner (y)
+  bX1[10] = lMargin + 100; // top left corner (x)
+  bY1[10] = tMargin + 320; // top left corner (y)
   bX2[10] = lMargin + 260; // bottom right corner (x)
-  bY2[10] = tMargin + 330; // bottom right corner (y)
+  bY2[10] = tMargin + 440; // bottom right corner (y)
   bText[10] = "Set C"; // holds the unit text
   
   // define button twelve (profile 4)
   bX1[11] = rMargin - 260; // top left corner (x)
-  bY1[11] = tMargin + 300; // top left corner (y)
-  bX2[11] = rMargin - 160; // bottom right corner (x)
-  bY2[11] = tMargin + 330; // bottom right corner (y)
+  bY1[11] = tMargin + 320; // top left corner (y)
+  bX2[11] = rMargin - 100; // bottom right corner (x)
+  bY2[11] = tMargin + 440; // bottom right corner (y)
   bText[11] = "Set D";  // holds the unit text
   
   // define button thirteen (profile 4)
   bX1[12] = rMargin - 400; // top left corner (x)
-  bY1[12] = tMargin + 400; // top left corner (y)
+  bY1[12] = tMargin + 285; // top left corner (y)
   bX2[12] = rMargin - 300; // bottom right corner (x)
-  bY2[12] = tMargin + 430; // bottom right corner (y)
+  bY2[12] = tMargin + 315; // bottom right corner (y)
   bText[12] = "Don't Save";  // holds the unit text
   
-  for (byte i = 3; i< tButtons; i++) { // sets the typical buttons' activity flags to false
+  for (byte i = nButtons; i< tButtons; i++) { // sets the typical buttons' activity flags to false
     bPress[i] = false;
     bHeld[i] = false;
     bActive[i] = false;
