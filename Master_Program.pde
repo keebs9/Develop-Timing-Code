@@ -7,54 +7,38 @@
 import processing.serial.Serial; // imports the additional functionality of the serial command set
 Serial myport; // create a serial object
 
-int progWidth = 1366; // the width of the entire program window
-int progHeight = 768; // the height of the entire program window 
-int plotWidth = 700; // this is the width of the display window
-int plotHeight = 513; // this is the height of the display, 513 is due to thickness of trace
-int lMargin = 40; // the width & so the position of the left margin
-int rMargin = lMargin + plotWidth; // the position of the right margin (from 0)
-int tMargin = 130; // the height & so the position of the top margin
-int bMargin = tMargin + plotHeight; // the position of the bottom margin (from 0)
-
-int yPos;
-float xPos = 0; // sets the initial X position of the trace
-int oldY;
-float oldX = 0;
-int clrWidth = 40; // this is the width of the clear box in front of the trace
-byte subFrames = 10; // sets the number of small plot steps to take in each real frame
-// this improves plot appearance in response to rapid changes of vertical position (magnitude) 
-
-int dataInt; // an integer to store the integer value of the data
+// declare variables which are used throughout the program. Note that variables are declared in the tabs from left to right
+int dataInt; // an integer to store the integer value of the acquired data
 float pressure = 0; // converts the digital input to a pressure based on the scale
-int transTime = 100; // defines the duration in ms of transient timings which are to be ignored
-boolean ignore = true; // a variable to record if transients are being ignored (tidier than using the button's active variable)
-
 byte nConfigs = 5; // holds the number of active configs, note that the last profile [5] holds the new config during calibration
 int msStart; // records the start time of the program
-int startDelay = 1650; // defines the initial delay before starting measurement (avoids blip as Arduino resets)
+int startDelay = 1700; // defines the initial delay before starting measurement (avoids blip as Arduino resets)
+byte fps = 50; // defines the number of frames per second the program should run at 
 
 void setup() {
+  // this section of code runs once at start-up, it configures the serial port and screen for use 
   msStart = millis();
   String[] portsList = Serial.list();
   String arduinoPort = portsList[portsList.length-1]; // sets the COM port to highest active
   myport = new Serial(this, arduinoPort, 115200); // "this" is default parent
   myport.bufferUntil('\n'); // sets the function to always read until the end of the line
 
-  noSmooth(); // Processing uses smoothing by default - turn this off to see the weird
-  // problems I was having, overlapping lines of same colour were being liased making them
-  // visibly different shades.
+  frameRate(fps); // sets the framerate in frames per second
+  noSmooth(); // Processing uses smoothing by default - this causes display issues in this program
   size(1366, 768); // sets the size of the graphics window AS SIZE won't accept variables!
   
-  loadCalData(); // test line to create file
-  defineButtons(); // initialises the buttons
+  loadCalData(); // load the 4 calibration profiles
+  defineButtons(); // initialises the button variables
   screenSetup(); // initialises the display e.g., size, background etc.
 }
 
 void draw() 
+// The "draw" code must contain all graphics output, even if these are within other functions and routines. At the end
+// of the draw code, the graphics are refreshed on the display. This occurs at the the framerate defined in Setup
 {
   if (mousePressed) whatSelected(); // if the left mouse button is being pressed
   else {
-    for (byte i=0; i<(nButtons + cButtons); i++)  { // repeat for the number of buttons
+    for (byte i=0; i<(tButtons); i++)  { // repeat for the number of buttons
       bPress[i] = false; // the button isn't being pressed
       bHeld[i] = false; // the button isn't being held
       butPress = false; // no buttons can be being pressed
@@ -86,11 +70,12 @@ void draw()
   oldY = yPos; // updates previous Y position regardless of whether the screen is being drawn
 }
 
-void serialEvent(Serial myport) { // the code to read the actual data
+void serialEvent(Serial myport) {
+  // the function which reads the actual data from the Arduino through the USB port
   String dataStr; // a string to store the data read from the COM port
   
   dataStr = myport.readStringUntil( '\n' ); // read the whole line
-  if (dataStr != null ) { // if there is some data and so isn't null...
+  if (dataStr != null && (millis() > msStart + startDelay - 20)) { // if there is some data (and so isn't null) and not during start0up period...
     dataStr = trim(dataStr); // trim function removed any extra spaces
     dataInt = int(dataStr); // converts the text based number to a numerical value, an integer
     pressure = (map(dataInt, minRaw[aC], maxRaw[aC], trueLo[aC], trueHi[aC])); // maps the pressure to the scale

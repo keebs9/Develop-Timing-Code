@@ -1,4 +1,4 @@
-// variables for the selectable windows
+// declare variables used for the selectable windows
 float[] upper = new float[3]; // stores the upper limit of the 3 timing windows
 float[] lower = new float[3]; // stores the lower limit of the 3 timing windows
 boolean[] upperDrag = new boolean[3]; // is the upper line still selected and being dragged
@@ -7,6 +7,7 @@ float[] winTopY = new float[3]; // stores the upper Y position of the text box
 float[] winBotY = new float[3]; // stores the lower Y position of the text box
 byte nWin = 2; // the number of currently active windows, used in for loops processing window actions
 
+// variables which hold the RGB values for the adjustable windows
 int[] valR = new int[3]; // stores the timing window colour - R (red) component
 int[] valG = new int[3]; // stores the timing window colour - G (green) component
 int[] valB = new int[3]; // stores the timing window colour - B (blue) component
@@ -22,11 +23,12 @@ int[] count = new int[3]; // stores the number of timing cycles measured for eac
 float[] totTime = new float[3]; // stores the accumulated total time spent within the monitored window, for each of 3 windows 
 boolean[] winActive = new boolean[3]; // stores the current status of the 3 timing windows
 boolean[] ignoring = new boolean[3]; // stores the current status of the 3 timing windows
+int transTime = 100; // defines the duration in ms of transient timings which are to be ignored
+boolean ignore = true; // a variable to record if transients are being ignored (tidier than using the button's active variable)
 
-void timing() {
-  // the following routine acquires time stamps when the current pressure is within a monitored window (range)
+void timing() { // acquire & set time stamps when the current pressure is within a monitored window (range)
   for (byte i =0; i<nWin; i++) { // repeat for the number of active pressure windows
-    if ((pressure >= lower[i]) && (pressure <= upper[i])) { // if the pressure is within the current timing window...
+    if ((pressure > lower[i]) && (pressure <= upper[i])) { // if the pressure is within the current timing window...
       if (winActive[i] == false) { // if timing was not already active...
         start[i] = millis(); // set the start time of this pressure window to the current time
       } else { // if it was already being timed...
@@ -51,4 +53,13 @@ void timing() {
       }
     }
   }
+}
+
+void resetTiming(byte winNum){ // serst the timing window variables when they are no longer valid e.g., after calibration
+  msTime[winNum] = 0; // reset the current time
+  start[winNum] = 0; // reset the last cycle time
+  average[winNum] = 0; // reset the average cycle time
+  count[winNum] = 0; // reset the current cycle count
+  totTime[winNum] = 0; // reset the total of cycle times
+  winActive[winNum] = false; // reset the active flag of the current window
 }
