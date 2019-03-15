@@ -1,8 +1,10 @@
+// declare variables used primarily in outputting the timing data
 int timeXpos = rMargin+220; // defines the X position of the timing data box
 int timeWidth = 90; // defines the width of the timing data box 
 int timeShade = 255; // defines the shade of the timing data box
-int textWidth = 140; // defines the width of the timing data caption box e.g., "Window 1"
-int textShade = 230; // defines the shafe of the timing data caption box
+int textWidth = 140; // defines the width of the timing data box
+int textShade = 230; // defines the shade of the timing data text
+int captionColour = #1011AA; // defines the colour of the timing window captions e.g., Window1:
 
 int winXpos = timeXpos-90; // defines the position for the adjustable timing window
 int winWidth = 70; // defines the width of the adjsuatble timing window
@@ -11,9 +13,8 @@ float y2; // used to record the lower Y position of the adjustable timing window
 float sTime; // stores the last time converted to the nearest 10th of a second
 float aTime; // stores the average time converted to the nearest 10th of a second
 
-void updateTimingData() {
- 
-  for (byte i =0; i<3; i++) { // repeat for number of timing windows
+void updateTimingData() { // updates the timg values displayed for each timing window
+   for (byte i =0; i<3; i++) { // repeat for number of timing windows
     // map the window position in relation to the scale based on the window limits
     
     //convert last time from milliseconds to seconds with 1 decimal point
@@ -58,19 +59,24 @@ void updateTimingData() {
   }
 }
 
-void drawDataCaptions() { // this is only used when the windows are first drawn or moved
+void drawDataCaptions() { // this is only used when the windows are first drawn or moved, it titles the data windows
   fill(bgFill); // sets the colour to that of the background
   stroke(bgFill); // sets the line colour for the outside of the rectangle to that of the background
   rect(timeXpos, 0, timeXpos + timeWidth + textWidth, progHeight); // blanks the whole area of the timing screen so it can be re-drawn afresh
   
   for (byte i=0; i<3; i++){ // reepat 3 times, once for each timing window possible
-    textSize(14); // sets the font size of the timing-window text label
-    if (i==2 && nWin==2) fill(grey); else fill(200, 20, 20); // set text to grey if drawing inactive 3rd window
+    if (i==2 && nWin==2){
+      fill(grey);
+      textSize(14); // sets the font size of the inactive timing-window text label
+    } else {
+      textSize(16); // sets the font size of the active timing-window text label
+      fill(captionColour); // set text to grey if drawing inactive 3rd window
+    }
     text("Window" + (i+1) +": ", timeXpos, winTopY[i]-8); // print the text caption for the window
   }
 }
 
-void drawMovableWindows() { // this is used when only the timing needs to be updated
+void drawMovableWindows() { // this is used when only the timing limits are updated, including at program start
   
   // clear the area of the adjustable windows and redraw them
   fill(bgFill); // set the fill colour to the background colour

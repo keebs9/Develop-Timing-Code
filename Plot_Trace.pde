@@ -1,19 +1,29 @@
-void drawPlot() {
+// declare variables used for drawing the plot
+int yPos;
+float xPos = 0; // sets the initial X position of the trace
+int oldY;
+float oldX = 0;
+int clrWidth = 40; // this is the width of the clear box in front of the trace
+byte subFrames = 10; // sets the number of small plot steps to take in each real frame
+// this improves plot appearance in response to rapid changes of vertical position (magnitude)
+
+void drawPlot() { // a function used to draw the pressure plot on the plot window
+  
   // sets the drawing colour based on whether the trace is in a measurement window or not
   stroke(10); // sets the default colour of the trace for when it is out of all timing windows
   for (byte i=0; i<3; i++){ // repeat 3 times, once for each pressure window
     if (winActive[i]) { // if the current window number is active then... (only 1 window can be active at any time)
-      stroke(darkR[i], darkG[i], darkB[i]); // set the drawing colours to that of the active window 
+      stroke(valR[i], valG[i], valB[i]); // set the drawing colours to that of the active window 
     }
   }
-  strokeWeight(3); // sets thickness of drawing tools
+  strokeWeight(3); // sets thickness of the line to 3, rather than 2 as in the majority of the program
   strokeCap(ROUND); // this has to be round for this function otherwise there are many gaps, constant pressure lines disappear
   line(oldX+lMargin, plotHeight-oldY+tMargin, xPos+lMargin, plotHeight-yPos+tMargin); // draw plot line from last to current position
   strokeCap(SQUARE); // resets sroke cap for rest of the program
   strokeWeight(2); // resets line thickness for rest of the program}
 }
 
-void blankAhead(){
+void blankAhead(){ // this function draws the blanking box in front of the current trace position & re-draws the scale lines in that area
   // Note that xPos is always relative to plot width for calculations and the margins added when drawn
   fill(plotFill); // sets the fill colour for the blanking rectangle
   stroke(plotFill); // sets the colour of the rectangle perimeter

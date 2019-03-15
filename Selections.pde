@@ -1,52 +1,53 @@
-// set up variables in determination of selections
-
+// declare variables used in determination of selections
 float upLinePos; // holds the graphical Y position of the upper selector line (rather than pressure value of line)
 float lowLinePos; // holds the graphical Y position of the lower selector line (rather than pressure value of line)
-int xM = 0;
-int yM = 0;
-float compare;
+int xM = 0; // stores the x position of the mouse when read as it is referenced several times
+int yM = 0; // stores the y position of the mouse when read as it is referenced several times
+byte minSize = 10; // defines the mimimum thickness of the timing windows
+byte minGap = 4; // defines the minimum gpa between successive pressure windwos
+float compare; // stores the difference in #pixels between two timing windows
 
 boolean butPress; // used to determine if any button is being pressed, if so don't process line selections
 boolean lineDrag; // used to determine if any line is selected, if so don't process any button selections
 
-void whatSelected() {
-  xM = mouseX; // read the mouse X position into a variable
-  yM = mouseY; // read the mouse Y position into a variable
+void whatSelected() { // a function used to determine what screen element has been selected
+  xM = mouseX; // read the mouse X position into a variable for mulitiple referencing
+  yM = mouseY; // read the mouse Y position into a variable for mulitiple referencing
 
   if (!lineDrag) checkButtonPress(); // if a line isn't being moved check for button presses
   
-  // if a button isn't being held & not in calibration mode check windows adjustments
+  // if a button isn't being held & not in calibration mode, check windows adjustments
   if (!butPress && !bActive[3]) checkWindowDrag();
 }
 
 void checkButtonPress() { // is a button being pressed?
-  butPress = false;
+  butPress = false; // sets the logical variable butPress to the default assumption of false
   for (byte i = 0; i < (tButtons); i++) { // repeat for each button
-    if ((xM >= bX1[i] && xM <= bX2[i]) && (yM >= bY1[i] && yM <= bY2[i])) {
+    if ((xM >= bX1[i] && xM <= bX2[i]) && (yM >= bY1[i] && yM <= bY2[i])) { // checks the mouse position against button co-ordinates
       
-      // if buttons 0-3 and not in calibration mode, or higher buttons but in calibration mode...
+      // if buttons 0-3 and not in calibration mode, or higher buttons but in certain calibration modes...
       if ((i<4 && calStage == -1) || (i>3 && (calStage == 0 || calStage == 7))) { 
         bPress[i] = true; // set the current button to pressed
         actionButtons(); // process the button selection
-        butPress = true;
+        butPress = true; // sets the logical variable butPress to true, this is tested elsewhere in the program
       }
     }
     // if any buttons are alraedy held (but the mouse is no longer over them) then set butPress to true
-    if (bHeld[i]) butPress = true;
+    if (bHeld[i]) butPress = true; // sets the logical variable butPress to true, this is tested elsewhere in the program
   }
 }
 
 void checkWindowDrag() { // is one of the pressure window limits being adjusted?
-  lineDrag = false;  
+  lineDrag = false; // sets the logical variable lineDrag to the default assumption of false
   for (byte i = 0; i <nWin; i++) { // repeat for each active pressure window
     // map the pressure values to graphical heights, note pressure and graphical values are inverse of each other
     upLinePos = map(upper[i], lScale[aC], uScale[aC], bMargin, tMargin); 
     lowLinePos = map(lower[i], lScale[aC], uScale[aC], bMargin, tMargin);
 
-    // **look for upper line selections**     
+// **look for upper line selections**     
 
-    // if the mouse is in range or the line is already selected
-    // the -2 and +3 in determining the selection are to save pointer prcesions, making the line easier to click on
+    // if the mouse is in range, or the line is already selected...
+    // the -2 and +3 in determining the selection are to save pointer precision, making the line easier to click on
     if ((yM >= upLinePos-2 && yM <= upLinePos+3 && xM >= winXpos && xM <= winXpos + winWidth) || upperDrag[i]) {
       for (byte j =0; j<nWin; j++) { // repeat for each active pressure window
 
@@ -57,18 +58,18 @@ void checkWindowDrag() { // is one of the pressure window limits being adjusted?
       if (lineDrag) break; // if another line is already selected then exit the for loop
 
       upperDrag[i] = true; // set the line as being selected
-      lineDrag = true; // state that a line is being pressed
+      lineDrag = true; // state that a line is being selected (tested elsewhere in the program)
       upLinePos = yM; // set the new upper limit to the current mouse Y position
       if (i<2) { // if the upper or middle window...
         upLinePos = constrain (upLinePos, tMargin, bMargin); // constrain the value to within the plot window
-      } else upLinePos = constrain (upLinePos, tMargin, bMargin+15); // constrain to the plot window or just below (3rd window only)
+      } else upLinePos = constrain (upLinePos, tMargin, bMargin + minSize + minGap); // constrain to the plot window or just below (3rd window only)
       
       // stop the top of the window merging with the bottom of the window
-      if (upLinePos > lowLinePos-5) upLinePos = lowLinePos-5;
+      if (upLinePos > lowLinePos-minSize) upLinePos = lowLinePos-minSize;
 
       // stop the 2nd and 3rd upper margins going above the next winows lower margin
       compare = map(lower[constrain(i-1, 0, 2)], lScale[aC], uScale[aC], bMargin, tMargin); // constrain to within array limits
-      if (i>0 && upLinePos < compare+5) upLinePos = compare+5;
+      if (i>0 && upLinePos < compare+minGap) upLinePos = compare+minGap;
 
       // map the value from graphical back to pressure, noting that they are the inverse of each other
       upLinePos = map(upLinePos, tMargin, bMargin, uScale[aC], lScale[aC]);
@@ -85,7 +86,7 @@ void checkWindowDrag() { // is one of the pressure window limits being adjusted?
       break; // exits the for loop and stops looking for lines to be selected
     }
 
-    // **now look for lower line selections**
+// **now look for lower line selections**
 
     // if the mouse is in range or the line is already selected
     // the -2 and +3 in determining the selection are to save pointer prcesions, making the line easier to click on
@@ -105,11 +106,11 @@ void checkWindowDrag() { // is one of the pressure window limits being adjusted?
       } else lowLinePos = constrain (lowLinePos, tMargin, bMargin+20); // constrain to plot window, or just below (3rd window only)
             
       // stop the bottom of the window merging with the top of the window
-      if (lowLinePos < upLinePos+5) lowLinePos = upLinePos+5;
+      if (lowLinePos < upLinePos+minSize) lowLinePos = upLinePos+minSize;
 
       // stop the 1st and 2nd lower margins going below the next winows upper margin
       compare = map(upper[constrain(i+1, 0, 2)], lScale[aC], uScale[aC], bMargin, tMargin); // constrain to within array limits
-      if (i<2 && lowLinePos > compare-5) lowLinePos = compare-5;
+      if (i<2 && lowLinePos > compare-minGap) lowLinePos = compare-minGap;
 
       // map the value from graphical back to pressure, noting that they are the inverse of each other
       lowLinePos = map(lowLinePos, tMargin, bMargin, uScale[aC], lScale[aC]);
@@ -117,7 +118,7 @@ void checkWindowDrag() { // is one of the pressure window limits being adjusted?
       lower[i] = lowLinePos; // assign the pressure based lower limit
       resetTiming(i); // reset the current window timings as they're now invalid due to new parameters
             
-      setWindowHeight();
+      setWindowHeight(); // calls the function which sets the data windows' heights & ensures they don't clash
       drawMovableWindows(); // redraw the adjustable windows 
       drawDataCaptions(); // redraw the data windows
       break; // exits the for loop and stops looking for lines to be selected
@@ -125,15 +126,8 @@ void checkWindowDrag() { // is one of the pressure window limits being adjusted?
   }
 }
 
-void resetTiming(byte winNum){
-  msTime[winNum] = 0; // reset the last cycle time
-  count[winNum] = 0; // reset the current cycle count
-  totTime[winNum] = 0; // reset the total of cycle times
-  average[winNum] = 0; // reset the average cycle time
-}
-
-void actionButtons() {
-  // **specifically deals with the first 2 buttons which are interlocked**
+void actionButtons() { // take specific actions depending on which button has been pressed / selected
+// **specifically deals with the first 2 buttons which are interlocked**
   // if button 0 or 1 are exclusively pressed and weren't previously 
   if (!bHeld[2]  && !bHeld[3] && ((bPress[0] && !bHeld[0] && !bHeld[1]) || (bPress[1] && !bHeld[1] && !bHeld[0]))) {
     if (!bActive[0] && bPress[0]) { // if button 0 wasn't active and is now pressed...
@@ -157,7 +151,7 @@ void actionButtons() {
     drawMovableWindows(); // redraw the adjustable windows (as will may have changed colour)
   }
 
-  // specifically deals with button 3 which determines if transients are ignored
+// specifically deals with button 3 which determines if transients are ignored
   // if button 2 is exclusively pressed but wasn't previously
   if (bPress[2] && !bHeld[2] && !bHeld[0] && !bHeld[1] && !bHeld[3]) {
     bActive[2] = !bActive[2]; // invert the button2 Held
@@ -174,23 +168,23 @@ void actionButtons() {
     clearPlotArea(); // clears the plot area ready to be used by the calibration routine
   }
   
-  // specifically deals with the calibration buttons (4-7)
+// specifically deals with the calibration buttons (4-7)
   if (calStage == 0) { // if acquiring the pressure units during calibration stage 0...
     for (byte j=nButtons; j < tButtons; j++) { // repeat for all the calibration buttons
       if (bPress[j] && !bHeld[j]) { // if the button was pressed...
-        units[nConfigs-1] = bText[j]; // sets the current unit text to that of the button //<>//
+        units[nConfigs-1] = bText[j]; // sets the current unit text to that of the button
         bActive[j] = true; // set the button press to active
         bHeld[j] = true; // set the button Held to true meaning it was already pressed and actioned
         calStage++;
       }
     }
-  } else if (calStage == 7) { // if queryinf whether the data should be saved during calibration stage 7...
+  } else if (calStage == 7) { // if querying whether the data should be saved during calibration stage 7...
      for (int j = nButtons + cButtons; j < tButtons; j++) { // repeat for all the calibration buttons
       if (bPress[j] && !bHeld[j]) { // if the button was pressed...
         bActive[j] = true; // set the button press to active
         bHeld[j] = true; // set the button Held to true meaning it was already pressed and actioned
         if (j<tButtons) { // if not the "don't save" button which has been pressed then...
-          minRaw[j- nButtons - cButtons] = minRaw[nConfigs-1]; // set the selected dataset to the new value  //<>//
+          minRaw[j- nButtons - cButtons] = minRaw[nConfigs-1]; // set the selected dataset to the new value 
           maxRaw[j- nButtons - cButtons] = maxRaw[nConfigs-1]; // set the selected dataset to the new value
           lScale[j- nButtons - cButtons] = lScale[nConfigs-1]; // set the selected dataset to the new value
           uScale[j- nButtons - cButtons] = uScale[nConfigs-1]; // set the selected dataset to the new value
@@ -198,7 +192,7 @@ void actionButtons() {
           trueHi[j- nButtons - cButtons] = trueHi[nConfigs-1]; // set the selected dataset to the new value
           saveCalData(); // save the data unless the button pressed was "don't save"
         }
-        aC = j; // sets the active config to either the dataset selected or the temporary set stored in set 5
+        aC = j-nButtons-cButtons; // sets the active config to either the dataset selected or the temporary set stored in set 5
         calStage++; // move on to the next calibration stage
       }
     }
