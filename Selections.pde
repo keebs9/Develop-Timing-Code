@@ -198,7 +198,7 @@ void actionButtons() { // take specific actions depending on which button has be
     }
   }
   
-  Buttons(); // redraw the buttons (as they may have changed state)
+  buttons(); // redraw the buttons (as they may have changed state)
 }
 
 void clearWinArea() { // clear the area where timing windows and timing data is displayed

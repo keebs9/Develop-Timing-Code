@@ -1,24 +1,26 @@
 // declare variables used for drawing the plot
-int yPos;
+int yPos; // stores the current Y position of the trace
 float xPos = 0; // sets the initial X position of the trace
-int oldY;
-float oldX = 0;
+int oldY; // stores the previous recored Y position of the trace
+float oldX = 0; // stores the previous recored X position of the trace
 int clrWidth = 40; // this is the width of the clear box in front of the trace
-byte subFrames = 10; // sets the number of small plot steps to take in each real frame
 // this improves plot appearance in response to rapid changes of vertical position (magnitude)
 
 void drawPlot() { // a function used to draw the pressure plot on the plot window
-  
   // sets the drawing colour based on whether the trace is in a measurement window or not
+  float pos = (map(cY, 0, plotHeight-2, lScale[aC], uScale[aC])); // maps the current Y position back to the true pressure;
   stroke(10); // sets the default colour of the trace for when it is out of all timing windows
   for (byte i=0; i<3; i++){ // repeat 3 times, once for each pressure window
-    if (winActive[i]) { // if the current window number is active then... (only 1 window can be active at any time)
+    if ((pos > lower[i]) && (pos <= upper[i]) && winActive[i]) {
       stroke(valR[i], valG[i], valB[i]); // set the drawing colours to that of the active window 
     }
   }
   strokeWeight(3); // sets thickness of the line to 3, rather than 2 as in the majority of the program
   strokeCap(ROUND); // this has to be round for this function otherwise there are many gaps, constant pressure lines disappear
-  line(oldX+lMargin, plotHeight-oldY+tMargin, xPos+lMargin, plotHeight-yPos+tMargin); // draw plot line from last to current position
+  //point(xIn+lMargin, plotHeight-yIn+tMargin);
+ 
+  line(oX+lMargin, plotHeight-oY+tMargin, cX+lMargin, plotHeight-cY+tMargin); // draw plot line from last to current position
+  
   strokeCap(SQUARE); // resets sroke cap for rest of the program
   strokeWeight(2); // resets line thickness for rest of the program}
 }
