@@ -93,7 +93,7 @@ void drawMovableWindows() { // this is used when only the timing limits are upda
       fill(grey); // set colour to greyed out
     } else fill(valR[i], valG[i], valB[i]); // sets the fill colour to that of the current window
     noStroke(); // sets the rectangle to have no outer line
-    rect(winXpos, y1, winXpos + winWidth, y2); // draw the adjustable window
+    rect(winXpos, y1, winXpos + winWidth, y2); // draw the adjustable window //<>//
     
     if (i==2 && nWin==2) { // if drawing th3 3rd window but only 2 are active
       stroke(grey-20); // set the colour to slighly darker than the greyed out colour

@@ -26,7 +26,7 @@ void drawCalScreen() { // a routine to take the user through a calibration proce
     enter = false; // set enter to false as last enter press now dealt with
   }
 
-  clearPlotArea(); // clears the plot area ready for the new text etc
+clearPlotArea(); // clears the plot area ready for the new text etc
   
   if (calStage == 0) setUnits();
   else
@@ -43,7 +43,7 @@ void drawCalScreen() { // a routine to take the user through a calibration proce
 
 void setUnits() {
   // this calibraiton step requires the user to select the pressure units
-  Buttons(); // draw the calibration buttons
+  buttons(); // draw the calibration buttons
   textSize(30); // sets the font size for the calibration screen text
   fill(0, 0, blueShade); // sets the text colour
   text("Please click on the required units below", lMargin+30, tMargin+40); // instructional text to the user
@@ -112,7 +112,7 @@ void setScaleLimits() {
 
 void askSaveData(){
   // prompts the user to save the new calibration data in 1 of 4 profiles, or to use it without saving
-  Buttons(); // draw the calibration buttons
+  buttons(); // draw the calibration buttons
   listCalData(); // prints the text desriptions of the currently saved configs over the buttons 
   textSize(30); // sets the font size for the calibration screen text
   fill(0, 0, blueShade);
@@ -133,6 +133,7 @@ void exitCalibration() {
   for (byte i=0; i<nWin; i++) resetTiming(i); // reset the timing variables for window "i"
       
   drawScales(); // re-draw the scales
+  drawGridLines(lMargin, rMargin-1); // refresh gridlines
   defineWindows(); // sets the timing windows to defaults based on new scale values
   drawDataCaptions(); // redraw the timing window captions 
   drawMovableWindows(); // redraw the movable timing windows

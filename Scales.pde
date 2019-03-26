@@ -16,7 +16,7 @@ void drawScales() { // a function which draws the vertical plot scale lines, gra
   strokeCap(SQUARE);
   fill(bgFill); // set the fill colour to that of the background
   stroke(bgFill); // set the line colour the same as this is used for the ouside of the rectangle
-  rect(rMargin,tMargin-10,rMargin+196,bMargin+10); // blanks the area of the scale and units
+  rect(rMargin,tMargin-10,rMargin+10,bMargin+10); // blanks the area of the scale
   
   if (lScale[aC] <0 && uScale[aC] >=0) { // if the lower scale is negative & the top scsale positive...
     // the numerical gap between divisions equals the sum of the absolute scale limits e.g., -20 to 40 = 60
@@ -41,7 +41,6 @@ void drawScales() { // a function which draws the vertical plot scale lines, gra
     line(rMargin, yScale, rMargin+5, yScale); // draws right hand scale
     text(nVal + " " + units[aC], rMargin + 6, yScale+4); // prints the scale numerical value (from the top down)
   }
-  drawGridLines(lMargin, rMargin-1); // drawing gridlines is outside this function as is called elsewhere too
 }
 
 void drawGridLines(float x1, float x2) { // a function to draw the gridlines between 2 given (inputted) x co-ordinates
@@ -62,11 +61,11 @@ void drawHorizontalScale(){
   line(lMargin, plotHeight+tMargin+11, rMargin, plotHeight+tMargin+11);
   while(i<(plotWidth + lMargin)){
     line(lMargin+i, plotHeight+tMargin+10, lMargin+i, plotHeight+tMargin+26); // draws a second (s) division at the current position
-    i += fps; // increment i by the number of frames per second, putting it at the x-position of the next whole second
+    i += (fps*speed); // increment i by the number of frames per second, putting it at the x-position of the next whole second
   }
   
   textSize(16); // sets the text size of the following text
-  textOut = "The plot width spans " + str((i/fps)-1) + " seconds"; // sets the text to be printed on the screen
+  textOut = "The plot width spans " + str(int(i/fps/speed)) + " seconds"; // sets the text to be printed on the screen
   textX = lMargin + (plotWidth/2) - (textWidth(textOut) / 2); // sets the start of the text X position based on the lenght of the text
   fill(labelColour); // sets the text colout to black
   text(textOut, textX, plotHeight+tMargin+50); // states the pupose of the horizontal graticules

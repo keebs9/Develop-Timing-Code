@@ -20,6 +20,7 @@ void screenSetup() { // this is called only during setup at program launch, it b
   stroke(plotFill); // sets the colour of the rectangle perimeter to the same as the fill colour
   rect(lMargin, tMargin, rMargin, bMargin);
   drawScales(); // draws the scales on the plot
+  drawGridLines(lMargin, rMargin-1); // draw gridlines
   drawHorizontalScale(); // draws the horizontal scale to indicate the time scale of the plot 
   textSize(14); // sets the font size of the timing-window text label
   fill(200, 20, 20); // sets the colour of the timing-window text label
@@ -76,7 +77,7 @@ void defineWindows() { // this function assigns values to the timing window vari
   setWindowHeight(); // calls the function which sets the data windows' heights & ensures they don't clash
 }
 
-void Buttons() { // this function is called universally and determines which buttons to draw based on the current screen
+void buttons() { // this function is called universally and determines which buttons to draw based on the current screen
   if (!bActive[3]) drawButtons(0,3); // if not in calibraiton mode draw normal buttons 
   else if (calStage <7) drawButtons(4,7); // draw the calibration buttons
   else if (calStage == 7) drawButtons(8,12); // draw the file operation buttons

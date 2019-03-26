@@ -10,10 +10,18 @@ Serial myport; // create a serial object
 // declare variables which are used throughout the program. Note that variables are declared in the tabs from left to right
 int dataInt; // an integer to store the integer value of the acquired data
 float pressure = 0; // converts the digital input to a pressure based on the scale
-byte nConfigs = 5; // holds the number of active configs, note that the last profile [5] holds the new config during calibration
+byte nConfigs = 2; // holds the number of active configs, note that the last profile [5] holds the new config during calibration
 int msStart; // records the start time of the program
 int startDelay = 1700; // defines the initial delay before starting measurement (avoids blip as Arduino resets)
-byte fps = 50; // defines the number of frames per second the program should run at 
+byte fps = 100; // defines the number of frames per second the program should run at
+byte subFrames = 40; // sets the number of small plot steps to take in each real frame (must be at least 2);
+float speed = 0.5; // sets the scroll speed of the plol (also influenced by frame rate)
+float cX; // stores an intermediate x-position as the frame is built-up
+float cY; // stores an intermediate pressure value as the frame is built-up
+float oX; // stores an intermediate previous x-position as the frame is built-up
+float oY; // stores an intermediate previous pressure value as the frame is built-up
+float incY; // sets the sub-frame increment of the Y-value
+float incX; // sets the sub-frame increment of the X-value
 
 void setup() {
   // this section of code runs once at start-up, it configures the serial port and screen for use 
@@ -53,21 +61,39 @@ void draw()
   if (bActive[3]) { // if in calibration mode...
       drawCalScreen(); // draw the calibration screen
   } else if (millis() > msStart + startDelay) {  // if not in calibration mode & not in start-up delay, draw usual screen
-      blankAhead();
-      for (byte i=0; i<subFrames; i++){
-      drawPlot(); 
       updateTimingData(); // this must be called from within draw NOT serial event (as it has graphics functions)
+      blankAhead();
       
-      xPos += (1.0/subFrames); // increment current X position, advancing the plot across the screen
+      incY = (yPos - oY) / subFrames; // sets an increment value for the y-position
+      incX = speed / subFrames; // sets an increment value for the x-position
+      cX = oX + incX;
+      cY = oY + incY;
+      
+      for (byte i=0; i<(subFrames); i++){ // was -1
+        oY = constrain(oY, 0, plotHeight-2);
+        cY = constrain(cY, 0, plotHeight-2);
+        // println("oY: " + oY + "cY: " + cY); 
+        drawPlot(); 
+        oX = cX;
+        oY = cY;
+        cX += incX; // increment current X position, advancing the plot across the screen
+        cY += incY; // increase the current Y position value
+      }
+      xPos += speed; // updates the true X position
       if (xPos >=plotWidth-2) { // if the x position is at the right edge of the plot window
-        xPos = 1; // reset to the left of the plot window
-        // note that xPos is always related to the plot window not the program frame
+          println("oX: " + oX + " xPos: " + xPos);
+          oldX = 0; // reset to the left of the plot window
+          oX = 0;
+          xPos = 1;
+          cX = 1;
+          // note that xPos is always related to the plot window not the program frame
+      }
+      oldX = xPos; // updates previous X position
+      // oldY = yPos; // updates previous Y position  
     }
-    oldX = xPos; // updates previous X position
-    oldY = yPos; // updates previous Y position  
-    }
-  }
-  oldY = yPos; // updates previous Y position regardless of whether the screen is being drawn
+   drawScales(); // refresh gridlines
+  // oldY = yPos; // updates previous Y position regardless of whether the screen is being drawn
+  // println("X: " + cX + "Y: " + cY); 
 }
 
 void serialEvent(Serial myport) {
@@ -81,7 +107,9 @@ void serialEvent(Serial myport) {
     pressure = (map(dataInt, minRaw[aC], maxRaw[aC], trueLo[aC], trueHi[aC])); // maps the pressure to the scale
     // *** this would be a good place to flag over/under limit ***
     pressure = constrain(pressure, lScale[aC], uScale[aC]); // constrain pressure to scale limits
+    oldY = yPos; // updates previous Y position
     yPos = int(map(pressure, lScale[aC], uScale[aC], 0, plotHeight-2)); // scales the input to the plot
+    // println("Ypos: " + yPos + "oldY: " + oldY); 
     timing();
   }
 }
