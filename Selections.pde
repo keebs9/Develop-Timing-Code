@@ -1,14 +1,14 @@
 // declare variables used in determination of selections
-float upLinePos; // holds the graphical Y position of the upper selector line (rather than pressure value of line)
-float lowLinePos; // holds the graphical Y position of the lower selector line (rather than pressure value of line)
+float upLinePos; // stores the graphical Y position of the upper selector line (rather than pressure value of line)
+float lowLinePos; // stores the graphical Y position of the lower selector line (rather than pressure value of line)
 int xM = 0; // stores the x position of the mouse when read as it is referenced several times
 int yM = 0; // stores the y position of the mouse when read as it is referenced several times
 byte minSize = 10; // defines the mimimum thickness of the timing windows
 byte minGap = 4; // defines the minimum gpa between successive pressure windwos
 float compare; // stores the difference in #pixels between two timing windows
 
-boolean butPress; // used to determine if any button is being pressed, if so don't process line selections
-boolean lineDrag; // used to determine if any line is selected, if so don't process any button selections
+boolean butPress; // true if any button is being pressed, if so don't process line selections
+boolean lineDrag; // true if any line is selected, if so don't process any button selections
 
 void whatSelected() { // a function used to determine what screen element has been selected
   xM = mouseX; // read the mouse X position into a variable for mulitiple referencing
@@ -25,8 +25,8 @@ void checkButtonPress() { // is a button being pressed?
   for (byte i = 0; i < (tButtons); i++) { // repeat for each button
     if ((xM >= bX1[i] && xM <= bX2[i]) && (yM >= bY1[i] && yM <= bY2[i])) { // checks the mouse position against button co-ordinates
       
-      // if buttons 0-3 and not in calibration mode, or higher buttons but in certain calibration modes...
-      if ((i<4 && calStage == -1) || (i>3 && (calStage == 0 || calStage == 7))) { 
+      // if a normal buttons 0-7 and not in calibration mode, or higher buttons but in certain calibration modes...
+      if ((i<nButtons && calStage == -1) || (i>nButtons-1 && (calStage == 0 || calStage == 7))) { 
         bPress[i] = true; // set the current button to pressed
         actionButtons(); // process the button selection
         butPress = true; // sets the logical variable butPress to true, this is tested elsewhere in the program
@@ -159,7 +159,7 @@ void actionButtons() { // take specific actions depending on which button has be
     bHeld[2] = true; // set the button Held to true meaning it was already pressed and actioned
   }
   
-  // specifically deals with button 4 which will put the program into calibration mode
+// specifically deals with button 4 which will put the program into calibration mode
   // if button 3 is exclusively pressed & not already in calibration mode...
   if (bPress[3] && !bActive[3] && !bHeld[0] && !bHeld[1] && !bHeld[2]) {
     bActive[3] = true; // set button 3 as active, this is used to determine that the program is in calibration mode
@@ -168,7 +168,49 @@ void actionButtons() { // take specific actions depending on which button has be
     clearPlotArea(); // clears the plot area ready to be used by the calibration routine
   }
   
-// specifically deals with the calibration buttons (4-7)
+// specifically deals with button 6 which will allow the user to set the scales and save the setup if desired
+  // if button 5 is exclusively pressed & not already in calibration mode...
+  if (bPress[5] && !bActive[5] && !bHeld[0] && !bHeld[1] && !bHeld[2]) {
+    bActive[5] = true; // set button 3 as active, this is used to determine that the program is in calibration mode
+    calStage = 3; // sets the progress of calibration to 3, bypassing the calibration of the actual transducer
+    clearWinArea(); // blanks out all the timing data
+    clearPlotArea(); // clears the plot area ready to be used by the calibration routine
+  }
+
+// specifically deals with button 7 which sets if timing should start after a phase change
+  // if button 6 is exclusively pressed but wasn't previously
+  if (bPress[6] && !bHeld[6] && !bHeld[0] && !bHeld[1] && !bHeld[3]) {
+    bActive[6] = !bActive[6]; // invert the button6 Held
+    startNext = bActive[6]; // set the startNext flag to the button state i.e., True or False
+    bHeld[6] = true; // set the button Held to true meaning it was already pressed and actioned
+    
+    if (startNext) { // if startNext activated, reset all the timings, but reactivate the current pressure window (if was active)
+      byte index = -1; // set the index flag out of range of the pressire woindows (0..2) 
+      for (byte i=0; i<nWin; i++) { // repeat for each window
+        if (winActive[i]) index = i; // if the window is active set the index to it (only 1 can be active at once)
+      }
+      for (byte i=0; i<nWin; i++) resetTiming(i); // reset the timing of each window (0..2)
+      if (index>-1) winActive[index]=true; // if an index was set then reactivate that window
+    }
+  }
+  
+// specifically deals with button 8 which turns the recording on / off
+  // if button 7 is exclusively pressed but wasn't previously
+  if (bPress[7] && !bHeld[7] && !bHeld[0] && !bHeld[1] && !bHeld[3]) {
+    bActive[7] = !bActive[7]; // invert the button6 Held
+    bHeld[7] = true; // set the button Held to true meaning it was already pressed and actioned
+    
+    if (bActive[7]) {
+      startRecording();
+      bText[7] = "Stop" + '\n' + "recording";
+    } else {
+      stopRecording();
+      stopRecStamps();
+      bText[7] = "Start" + '\n' + "recording";
+    }
+  }
+
+// specifically deals with the calibration buttons (9-12)
   if (calStage == 0) { // if acquiring the pressure units during calibration stage 0...
     for (byte j=nButtons; j < tButtons; j++) { // repeat for all the calibration buttons
       if (bPress[j] && !bHeld[j]) { // if the button was pressed...
@@ -179,11 +221,11 @@ void actionButtons() { // take specific actions depending on which button has be
       }
     }
   } else if (calStage == 7) { // if querying whether the data should be saved during calibration stage 7...
-     for (int j = nButtons + cButtons; j < tButtons; j++) { // repeat for all the calibration buttons
+     for (int j = nButtons + cButtons; j < tButtons; j++) { // repeat for all the calibration buttons (was nBut + cBut -1)
       if (bPress[j] && !bHeld[j]) { // if the button was pressed...
         bActive[j] = true; // set the button press to active
         bHeld[j] = true; // set the button Held to true meaning it was already pressed and actioned
-        if (j<tButtons) { // if not the "don't save" button which has been pressed then...
+        if (j<tButtons-1) { // if not the "don't save" button which has been pressed then...
           minRaw[j- nButtons - cButtons] = minRaw[nConfigs-1]; // set the selected dataset to the new value 
           maxRaw[j- nButtons - cButtons] = maxRaw[nConfigs-1]; // set the selected dataset to the new value
           lScale[j- nButtons - cButtons] = lScale[nConfigs-1]; // set the selected dataset to the new value
@@ -192,7 +234,7 @@ void actionButtons() { // take specific actions depending on which button has be
           trueHi[j- nButtons - cButtons] = trueHi[nConfigs-1]; // set the selected dataset to the new value
           saveCalData(); // save the data unless the button pressed was "don't save"
         }
-        aC = j-nButtons-cButtons; // sets the active config to either the dataset selected or the temporary set stored in set 5
+        aC = j-nButtons-cButtons; // sets the active config to either the dataset selected or the temporary set stored in set 5 (was also -1)
         calStage++; // move on to the next calibration stage
       }
     }
