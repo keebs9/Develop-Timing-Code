@@ -1,8 +1,10 @@
 // declare variables primarily used in the saving & loading of calibration data
-int aC = 0; // this is the number of the active config, deliberately small as referenced a lot
-byte defaultCal = 0; // holds the number of the currenlty selected default data set
-String[] calData = new String [nConfigs]; // Holds the config data as strings which can be saved to file, or loaded from file
-// and save the data when required.
+int aC = 0; // defines the number of the active config, it has a deliberately short name as is referenced a lot
+byte defaultCal = 0; // stores the number of the currenlty selected default data set
+String[] calData = new String [nConfigs]; // stores the config data as strings which can be saved to file, or loaded from file
+String dataFileStamp; // stores the time and date stamp which shall be used in the file name
+PrintWriter outputData; // sets up a file which can be written to on the fly to record timing data
+PrintWriter outputMs; // sets up a file which can be written to live with the time stamps of the data read
 
 void saveCalData() { // the code used to save the current calibration data
 // the saving function works by writing an array (set) of text stings to a text file. The data of each dataset are
@@ -39,7 +41,7 @@ void loadCalData() { // the code used to save the current calibration data
 void listCalData() { // displays the 4 datasets and allows 1 to be selected for saving
 // the function uses the data sotred in the calibration button text and the dataset arrays to display a summary
 // of each profile, to allow the user to know which config they are overwriting
-  for (int i= nButtons + cButtons; i<nButtons + cButtons +dButtons -1; i++) { // repeat for number of "data" buttons
+  for (int i= nButtons + cButtons; i<tButtons -1; i++) { // repeat for number of "data" buttons
     int j = i-cButtons; // this is to shorten the code as else each j would be replaced with "i-cButtons"
     int k = i-nButtons-cButtons; // this is to shorten the code as else each k would be replaced with "i-nButtons-cButtons"
     fill(0);
@@ -49,4 +51,25 @@ void listCalData() { // displays the 4 datasets and allows 1 to be selected for 
     text("units: " + bText[j] + '\n' + "low: " + str(lScale[k]) + bText[j], bX1[i] + xOff, bY1[i] + yOff + 20);
     text("high: " + str(uScale[k]) + bText[j], bX1[i] + xOff, bY1[i] + yOff + 62);
   }
+}
+
+void startRecording() {
+  // create a unique file name based on the time & date, nf pads with zeroes e.g., 6 becomes 06
+  dataFileStamp = nf(day(),2,0) + "-" + nf(month(),2,0) + "-" + year() + " @ " + nf(hour(),2,0) + "-" + nf(minute(),2,0) + "_" + nf(second(),2,0); 
+  outputData = createWriter("Data from " + dataFileStamp + ".txt"); // creates a new output file for the timing data
+}
+
+void stopRecording() {
+  outputData.flush(); // Writes the remaining data to the file
+  outputData.close(); // Finishes (closes) the file
+}
+
+void startRecStamps() {
+  dataFileStamp = nf(day(),2,0) + "-" + nf(month(),2,0) + "-" + year() + " @ " + nf(hour(),2,0) + "-" + nf(minute(),2,0) + "_" + nf(second(),2,0); 
+  outputMs = createWriter("Stamps from " + dataFileStamp + ".txt"); // creates a new output file for the timing data
+}
+
+void stopRecStamps() {
+  outputMs.flush(); // Writes the remaining data to the file
+  outputMs.close(); // Finishes (closes) the file
 }

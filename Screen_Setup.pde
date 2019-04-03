@@ -1,12 +1,12 @@
 // declare variables which define the screen layout
-int progWidth = 1366; // the width of the entire program window
-int progHeight = 768; // the height of the entire program window 
-int plotWidth = 700; // this is the width of the display window
-int plotHeight = 513; // this is the height of the display, 513 is due to thickness of trace
-int lMargin = 40; // the width & so the position of the left margin
-int rMargin = lMargin + plotWidth; // the position of the right margin (from 0)
-int tMargin = 130; // the height & so the position of the top margin
-int bMargin = tMargin + plotHeight; // the position of the bottom margin (from 0)
+int progWidth = 1366; // defines the width of the entire program window
+int progHeight = 768; // defines the height of the entire program window 
+int plotWidth = 700; // defines  the width of the display window
+int plotHeight = 514; // defines  the height of the display, 514 is due to thickness of trace (was 513)
+int lMargin = 40; // defines the width & so the position of the left margin
+int rMargin = lMargin + plotWidth; // defines the position of the right margin (from 0)
+int tMargin = 130; // defines the height & so the position of the top margin
+int bMargin = tMargin + plotHeight; // defines the position of the bottom margin (from 0)
 int bgFill = 190; // defines the greyscale colour of the background
 int plotFill = 230; // defines the greyscale colour of the plot window
 int grey = 100; // defines the greyscale colour for greyed out text (must be at least 30)
@@ -43,14 +43,14 @@ void screenSetup() { // this is called only during setup at program launch, it b
 
 void defineWindows() { // this function assigns values to the timing window variables e.g., upper & lower values
 
-  // defines pressure monitoring window 1 defaults (shall be customisable)
+  // defines pressure monitoring window 1 defaults (is also user-customisable)
   upper[0] = uScale[aC]; // sets the top of the 1st windows to full scale
   lower[0] = uScale[aC] - gapNum; // sets the bottom of the 1st window to 1 division down
   valR[0] = 211; 
   valG[0] = 32; 
   valB[0] = 32; // sets the colours for this window
 
-  // defines pressure monitoring window 2 defaults (shall be customisable)
+  // defines pressure monitoring window 2 defaults (is also user-customisable)
   upper[1] = ((lScale[aC] + uScale[aC]) / 2) + (0.5 * gapNum); // sets the top of the 2nd windows to mid-point + 1/2 a division
   lower[1] = ((lScale[aC] + uScale[aC]) / 2) - (0.5 * gapNum); // sets the top of the 2nd windows to mid-point - 1/2 a division
   valR[1] = 250; 
@@ -78,9 +78,14 @@ void defineWindows() { // this function assigns values to the timing window vari
 }
 
 void buttons() { // this function is called universally and determines which buttons to draw based on the current screen
-  if (!bActive[3]) drawButtons(0,3); // if not in calibraiton mode draw normal buttons 
-  else if (calStage <7) drawButtons(4,7); // draw the calibration buttons
-  else if (calStage == 7) drawButtons(8,12); // draw the file operation buttons
+  if (!bActive[3] && !bActive[5]) {
+    drawButtons(0, nButtons-1); // if not in calibraiton mode draw normal buttons
+  }
+  else if (calStage <7) {
+    drawButtons(nButtons, nButtons+cButtons-1); // draw the calibration buttons
+  } else if (calStage == 7) {
+    drawButtons(tButtons-dButtons, tButtons-1); // draw the file operation buttons
+  }
 }
 
 void drawButtons(int lo, int hi) { // draws the button in the range specified e.g., 0..3. The importing of button numbers

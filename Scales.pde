@@ -2,21 +2,21 @@
 int scaleColour = #B9D8FF; // defines the colour of the scale lines over the plot (acquired from colour picker) 
 int gratColour = #124889; // defiens the colour used to draw the scale graticules
 int labelColour = #1011AA; // defines the colour used to print the axis labels
-float[] trueLo = new float[nConfigs]; // defines the lowest pressure recorded during calibration
-float[] trueHi = new float[nConfigs]; // defines the highest pressure recorded during calibration
-float[] lScale = new float[nConfigs]; // defines the bottom of the vertical axis scale
-float[] uScale  = new float[nConfigs]; // defines the top of the vertical axis scale
-byte nDivisions = 8; // creates a variable for the number of on-screen divisions
-float gapNum; // creates a variable to hold the gap/spacing in the numerical value of the scale divisions
-String[] units = new String[nConfigs]; // holds the current pressure units
-String nVal; // holds the value of the current scale division (tidies up the code)
-float yScale; // this holds the current Y value for drawing the scale (tidies up the code)
+float[] trueLo = new float[nConfigs]; // defines the lowest pressure recorded during calibration (in pressure units)
+float[] trueHi = new float[nConfigs]; // defines the highest pressure recorded during calibration (in pressure units)
+float[] lScale = new float[nConfigs]; // defines the bottom of the vertical axis scale (in pressure units)
+float[] uScale  = new float[nConfigs]; // defines the top of the vertical axis scale (in pressure units)
+byte nDivisions = 8; // defines the number of on-screen divisions of the vertical axis, note that this 8 divsions (band) = 9 graticules
+float gapNum; // stores the gap/spacing in the numerical value of the scale divisions
+String[] units = new String[nConfigs]; // stores the current pressure units
+String nVal; // stores the value of the current scale division (tidies up the code)
+float yScale; // stores the current Y value for drawing the scale (tidies up the code)
 
 void drawScales() { // a function which draws the vertical plot scale lines, graticules and labels
   strokeCap(SQUARE);
   fill(bgFill); // set the fill colour to that of the background
   stroke(bgFill); // set the line colour the same as this is used for the ouside of the rectangle
-  rect(rMargin,tMargin-10,rMargin+10,bMargin+10); // blanks the area of the scale
+  rect(rMargin, tMargin-10, winXpos-1, bMargin+10); // blanks the area of the scale (was rMargin+10)
   
   if (lScale[aC] <0 && uScale[aC] >=0) { // if the lower scale is negative & the top scsale positive...
     // the numerical gap between divisions equals the sum of the absolute scale limits e.g., -20 to 40 = 60
