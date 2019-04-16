@@ -1,7 +1,10 @@
 // declare variables primarily used in the saving & loading of calibration data
 int aC = 0; // defines the number of the active config, it has a deliberately short name as is referenced a lot
+int[] ADC = new int[nConfigs]; // stores the ADC channel number of the current config 
 byte defaultCal = 0; // stores the number of the currenlty selected default data set
-String[] calData = new String [nConfigs]; // stores the config data as strings which can be saved to file, or loaded from file
+String[] range = {"Range: low", "Range : high"}; // 
+
+String[] calData = new String[nConfigs]; // stores the config data as strings which can be saved to file, or loaded from file
 String dataFileStamp; // stores the time and date stamp which shall be used in the file name
 PrintWriter outputData; // sets up a file which can be written to on the fly to record timing data
 PrintWriter outputMs; // sets up a file which can be written to live with the time stamps of the data read
@@ -12,8 +15,8 @@ void saveCalData() { // the code used to save the current calibration data
 // as the program is run from.
   for (byte i=0; i < nConfigs-1; i++){
     calData[i] = bText[i + nButtons] + '\t' + str(minRaw[i]) + '\t' + str(maxRaw[i]) + '\t' + str(lScale[i]); // separates data with tabs
-    calData[i] += '\t' + str(uScale[i]) + '\t' + str(trueLo[i]) + '\t' + str(trueHi[i]); // separates data with tabs
-    saveStrings("calData.PCT", calData); // this operation saves all 4 data sets in one operation
+    calData[i] += '\t' + str(uScale[i]) + '\t' + str(trueLo[i]) + '\t' + str(trueHi[i]) + '\t' + str(ADC[i]); // separates data with tabs
+    saveStrings("calData.PCT", calData); // this operation saves all 4 data sets in one operation //<>//
   }
 }
 
@@ -35,21 +38,23 @@ void loadCalData() { // the code used to save the current calibration data
     uScale[i] = float(pieces[4]);
     trueLo[i] = float(pieces[5]);
     trueHi[i] = float(pieces[6]);
+    ADC[i] = int(pieces[7]);
   }
 }
 
 void listCalData() { // displays the 4 datasets and allows 1 to be selected for saving
 // the function uses the data sotred in the calibration button text and the dataset arrays to display a summary
 // of each profile, to allow the user to know which config they are overwriting
-  for (int i= nButtons + cButtons; i<tButtons -1; i++) { // repeat for number of "data" buttons
+  for (int i= nButtons+cButtons; i<nButtons+cButtons+dButtons-1; i++) { // repeat for number of "data" buttons
     int j = i-cButtons; // this is to shorten the code as else each j would be replaced with "i-cButtons"
     int k = i-nButtons-cButtons; // this is to shorten the code as else each k would be replaced with "i-nButtons-cButtons"
     fill(0);
     textSize(14);
     // the text lines use the text from the calibration buttons but the positions from the data buttons, hence i & j
     // the k referenecs are setting the index to 0..3 rather than say 8-11
-    text("units: " + bText[j] + '\n' + "low: " + str(lScale[k]) + bText[j], bX1[i] + xOff, bY1[i] + yOff + 20);
-    text("high: " + str(uScale[k]) + bText[j], bX1[i] + xOff, bY1[i] + yOff + 62);
+    text("Units: " + bText[j] + '\n' + "Low: " + str(lScale[k]) + bText[j], bX1[i] + xOff, bY1[i] + yOff + 20);
+    text("High: " + str(uScale[k]) + bText[j], bX1[i] + xOff, bY1[i] + yOff + 62);
+    text(range[ADC[k]], bX1[i] + xOff, bY1[i] + yOff + 84);
   }
 }
 

@@ -2,15 +2,21 @@
 int scaleColour = #B9D8FF; // defines the colour of the scale lines over the plot (acquired from colour picker) 
 int gratColour = #124889; // defiens the colour used to draw the scale graticules
 int labelColour = #1011AA; // defines the colour used to print the axis labels
+
 float[] trueLo = new float[nConfigs]; // defines the lowest pressure recorded during calibration (in pressure units)
 float[] trueHi = new float[nConfigs]; // defines the highest pressure recorded during calibration (in pressure units)
 float[] lScale = new float[nConfigs]; // defines the bottom of the vertical axis scale (in pressure units)
 float[] uScale  = new float[nConfigs]; // defines the top of the vertical axis scale (in pressure units)
+
 byte nDivisions = 8; // defines the number of on-screen divisions of the vertical axis, note that this 8 divsions (band) = 9 graticules
 float gapNum; // stores the gap/spacing in the numerical value of the scale divisions
 String[] units = new String[nConfigs]; // stores the current pressure units
 String nVal; // stores the value of the current scale division (tidies up the code)
 float yScale; // stores the current Y value for drawing the scale (tidies up the code)
+
+// the defined speeds which result in the 6 selectable timebases (5s, 10s, 15s, 20s, 30s, 60s)
+// speed = plot width (can't be referenced here as yet to be defiend) / timebase * frames per second 
+float[] speeds = {pW/(5.0*fps), pW/(10.0*fps), pW/(15.0*fps), pW/(20.0*fps), pW/(30.0*fps), pW/(60.0*fps)};
 
 void drawScales() { // a function which draws the vertical plot scale lines, graticules and labels
   strokeCap(SQUARE);
@@ -54,19 +60,31 @@ void drawGridLines(float x1, float x2) { // a function to draw the gridlines bet
 }
 
 void drawHorizontalScale(){
-  int i=0;
-  String textOut = "";
-  float textX = 0;
+  fill(bgFill); // set the fill colour to that of the background
+  stroke(bgFill); // set the line colour the same as this is used for the ouside of the rectangle
+  rect(lMargin, plotHeight+tMargin+3, rMargin, progHeight); // blanks the area of the horizontal scale & label
+  
+  float i=0; // stores the current horizontal position, used in the while loop 
+  String textOut = ""; // stores the text label to be printed under the horizontal scale
+  float textX = 0; // stores the left hand edge of the text position, set automatically below
+  
   stroke(gratColour); // sets the colour of the graticules
   line(lMargin, plotHeight+tMargin+11, rMargin, plotHeight+tMargin+11);
-  while(i<(plotWidth + lMargin)){
+  
+  while(int(i)<=plotWidth) { // repeat the loop until i is greater than the plotwidth
     line(lMargin+i, plotHeight+tMargin+10, lMargin+i, plotHeight+tMargin+26); // draws a second (s) division at the current position
-    i += (fps*speed); // increment i by the number of frames per second, putting it at the x-position of the next whole second
+    i += (speed*fps); // increment i by the number of frames per second, putting it at the x-position of the next whole second
   }
   
+  i -= (speed*fps); // decrement i by 1 frame as last increment takes position beyond plotwidth and causes #s to be 1 too high
+  
   textSize(16); // sets the text size of the following text
-  textOut = "The plot width spans " + str(int(i/fps/speed)) + " seconds"; // sets the text to be printed on the screen
+  textOut = "The plot width spans " + str(round(i/fps/speed)) + " seconds"; // sets the text to be printed on the screen
   textX = lMargin + (plotWidth/2) - (textWidth(textOut) / 2); // sets the start of the text X position based on the lenght of the text
-  fill(labelColour); // sets the text colout to black
-  text(textOut, textX, plotHeight+tMargin+50); // states the pupose of the horizontal graticules
+  fill(labelColour); // sets the text colour to black
+  text(textOut, textX, plotHeight+tMargin+50); // states the purpose of the horizontal graticules
+}
+
+void selectTimebase(){
+  buttons();
 }

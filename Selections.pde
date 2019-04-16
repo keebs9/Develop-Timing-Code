@@ -21,13 +21,14 @@ void whatSelected() { // a function used to determine what screen element has be
 }
 
 void checkButtonPress() { // is a button being pressed?
+  int cS = calStage; // short variable to shorten code locally
   butPress = false; // sets the logical variable butPress to the default assumption of false
-  for (byte i = 0; i < (tButtons); i++) { // repeat for each button
+  for (byte i = 0; i < (totalButtons); i++) { // repeat for each button
     if ((xM >= bX1[i] && xM <= bX2[i]) && (yM >= bY1[i] && yM <= bY2[i])) { // checks the mouse position against button co-ordinates
       
-      // if a normal buttons 0-7 and not in calibration mode, or higher buttons but in certain calibration modes...
-      if ((i<nButtons && calStage == -1) || (i>nButtons-1 && (calStage == 0 || calStage == 7))) { 
-        bPress[i] = true; // set the current button to pressed
+      // if a normal button 0-7 and not in a special mode e.g., calibration mode, or a higher button but in certain modes...
+      if ((i<grp1 && cS== -1) || (i>=grp1+4 && i<grp2 && cS== 0) || (i>=grp1 && i<grp1+4 && cS==1) || (i>=grp2 && i<grp3 && cS== 8) || (i>=grp3 && i<grp4 && bActive[4] )) { 
+        if (!otherButton(i)) bPress[i] = true; // set the current button to pressed if nothing else being pressed
         actionButtons(); // process the button selection
         butPress = true; // sets the logical variable butPress to true, this is tested elsewhere in the program
       }
@@ -75,10 +76,7 @@ void checkWindowDrag() { // is one of the pressure window limits being adjusted?
       upLinePos = map(upLinePos, tMargin, bMargin, uScale[aC], lScale[aC]);
 
       upper[i] = upLinePos; // assign the pressure based upper limit
-      msTime[i] = 0; // reset the last cycle time as it is void due to new monitoring window
-      count[i] = 0; // reset the current cycle count as it is void due to new monitoring window
-      totTime[i] = 0; // reset the total of cycle times (used in averaging) as it is void due to new monitoring window
-      average[i] = 0; // reset the average cycle time as it is void due to new monitoring window
+      resetTiming(i); // reset the current window timings as they're now invalid due to new parameters
 
       setWindowHeight();
       drawMovableWindows(); // redraw the adjustable windows 
@@ -129,7 +127,9 @@ void checkWindowDrag() { // is one of the pressure window limits being adjusted?
 void actionButtons() { // take specific actions depending on which button has been pressed / selected
 // **specifically deals with the first 2 buttons which are interlocked**
   // if button 0 or 1 are exclusively pressed and weren't previously 
-  if (!bHeld[2]  && !bHeld[3] && ((bPress[0] && !bHeld[0] && !bHeld[1]) || (bPress[1] && !bHeld[1] && !bHeld[0]))) {
+  //if (!bHeld[2]  && !bHeld[3] && ((bPress[0] && !bHeld[0] && !bHeld[1]) || (bPress[1] && !bHeld[1] && !bHeld[0]))) {
+  //if ((bPress[0] && !bHeld[0] && !bHeld[1]) || (bPress[1] && !bHeld[1] && !bHeld[0])){
+    if ((bPress[0] && !bHeld[0] && !otherButton(0)) || (bPress[1] && !bHeld[1] && !otherButton(0))){
     if (!bActive[0] && bPress[0]) { // if button 0 wasn't active and is now pressed...
       bActive[0] = true; // set button 0 to active
       bActive[1] = false; // set btton 1 to inactive
@@ -153,7 +153,7 @@ void actionButtons() { // take specific actions depending on which button has be
 
 // specifically deals with button 3 which determines if transients are ignored
   // if button 2 is exclusively pressed but wasn't previously
-  if (bPress[2] && !bHeld[2] && !bHeld[0] && !bHeld[1] && !bHeld[3]) {
+  if (bPress[2] && !bHeld[2] && !otherButton(2)) {
     bActive[2] = !bActive[2]; // invert the button2 Held
     ignore = bActive[2]; // set the ignore flag to the button state i.e., True or False
     bHeld[2] = true; // set the button Held to true meaning it was already pressed and actioned
@@ -161,25 +161,32 @@ void actionButtons() { // take specific actions depending on which button has be
   
 // specifically deals with button 4 which will put the program into calibration mode
   // if button 3 is exclusively pressed & not already in calibration mode...
-  if (bPress[3] && !bActive[3] && !bHeld[0] && !bHeld[1] && !bHeld[2]) {
+  if (bPress[3] && !bActive[3] && !otherButton(3)) {
     bActive[3] = true; // set button 3 as active, this is used to determine that the program is in calibration mode
-    calStage = 0; // sets the progress of calibration to one
+    calStage = 0; // sets the progress of calibration to stage 0 (the beginning
     clearWinArea(); // blanks out all the timing data
     clearPlotArea(); // clears the plot area ready to be used by the calibration routine
   }
+
+// specifically deals with button 5 which will allow the user to set the timebase to one of 6 possible presets
+  // if button 4 is exclusively pressed & not already in calibration mode...
+  if (bPress[4] && !bActive[4] && !otherButton(4)) {
+    bActive[4] = true; // set button 4 as active, this is used to trigger the timebase selection process
+    clearPlotArea(); // clears the plot area ready to be used by the calibration routine
+  }  
   
 // specifically deals with button 6 which will allow the user to set the scales and save the setup if desired
   // if button 5 is exclusively pressed & not already in calibration mode...
-  if (bPress[5] && !bActive[5] && !bHeld[0] && !bHeld[1] && !bHeld[2]) {
+  if (bPress[5] && !bActive[5] && !otherButton(5)) {
     bActive[5] = true; // set button 3 as active, this is used to determine that the program is in calibration mode
-    calStage = 3; // sets the progress of calibration to 3, bypassing the calibration of the actual transducer
+    calStage = 4; // sets the progress of calibration to 4, bypassing the calibration of the actual transducer
     clearWinArea(); // blanks out all the timing data
     clearPlotArea(); // clears the plot area ready to be used by the calibration routine
   }
 
 // specifically deals with button 7 which sets if timing should start after a phase change
   // if button 6 is exclusively pressed but wasn't previously
-  if (bPress[6] && !bHeld[6] && !bHeld[0] && !bHeld[1] && !bHeld[3]) {
+  if (bPress[6] && !bHeld[6] && !otherButton(6)) {
     bActive[6] = !bActive[6]; // invert the button6 Held
     startNext = bActive[6]; // set the startNext flag to the button state i.e., True or False
     bHeld[6] = true; // set the button Held to true meaning it was already pressed and actioned
@@ -196,7 +203,7 @@ void actionButtons() { // take specific actions depending on which button has be
   
 // specifically deals with button 8 which turns the recording on / off
   // if button 7 is exclusively pressed but wasn't previously
-  if (bPress[7] && !bHeld[7] && !bHeld[0] && !bHeld[1] && !bHeld[3]) {
+  if (bPress[7] && !bHeld[7] && !otherButton(7)) {
     bActive[7] = !bActive[7]; // invert the button6 Held
     bHeld[7] = true; // set the button Held to true meaning it was already pressed and actioned
     
@@ -210,9 +217,9 @@ void actionButtons() { // take specific actions depending on which button has be
     }
   }
 
-// specifically deals with the calibration buttons (9-12)
-  if (calStage == 0) { // if acquiring the pressure units during calibration stage 0...
-    for (byte j=nButtons; j < tButtons; j++) { // repeat for all the calibration buttons
+// specifically deals with the calibration buttons (9-14)
+  if (calStage == 1) { // if acquiring the pressure units during calibration stage 0...
+    for (int j=grp1; j < grp1+4; j++) { // repeat for all the calibration buttons
       if (bPress[j] && !bHeld[j]) { // if the button was pressed...
         units[nConfigs-1] = bText[j]; // sets the current unit text to that of the button
         bActive[j] = true; // set the button press to active
@@ -220,26 +227,54 @@ void actionButtons() { // take specific actions depending on which button has be
         calStage++;
       }
     }
-  } else if (calStage == 7) { // if querying whether the data should be saved during calibration stage 7...
-     for (int j = nButtons + cButtons; j < tButtons; j++) { // repeat for all the calibration buttons (was nBut + cBut -1)
+  } else if (calStage == 0) { // if acquiring calibration channel
+    for (int j=grp1+4; j < grp2; j++) { // repeat for all the calibration buttons
+      if (bPress[j] && !bHeld[j]) { // if the button was pressed...
+        ADC[nConfigs-1] = j-grp1-4; // sets the current unit text to that of the button
+        bActive[j] = true; // set the button press to active
+        bHeld[j] = true; // set the button Held to true meaning it was already pressed and actioned
+        calStage++;
+      }
+    }
+
+// specifically deals with the data save buttons (15-19)    
+  } else if (calStage == 8) { // if querying whether the data should be saved during calibration stage 7...
+     for (int j = grp2; j < grp3; j++) { // repeat for all the calibration buttons (was nBut + cBut -1)
       if (bPress[j] && !bHeld[j]) { // if the button was pressed...
         bActive[j] = true; // set the button press to active
         bHeld[j] = true; // set the button Held to true meaning it was already pressed and actioned
-        if (j<tButtons-1) { // if not the "don't save" button which has been pressed then...
-          minRaw[j- nButtons - cButtons] = minRaw[nConfigs-1]; // set the selected dataset to the new value 
-          maxRaw[j- nButtons - cButtons] = maxRaw[nConfigs-1]; // set the selected dataset to the new value
-          lScale[j- nButtons - cButtons] = lScale[nConfigs-1]; // set the selected dataset to the new value
-          uScale[j- nButtons - cButtons] = uScale[nConfigs-1]; // set the selected dataset to the new value
-          trueLo[j- nButtons - cButtons] = trueLo[nConfigs-1]; // set the selected dataset to the new value
-          trueHi[j- nButtons - cButtons] = trueHi[nConfigs-1]; // set the selected dataset to the new value
+        if (j<totalButtons-1) { // if not the "don't save" button which has been pressed then...
+          minRaw[j- grp2] = minRaw[nConfigs-1]; // set the selected dataset to the new value  //<>//
+          maxRaw[j- grp2] = maxRaw[nConfigs-1]; // set the selected dataset to the new value
+          lScale[j- grp2] = lScale[nConfigs-1]; // set the selected dataset to the new value
+          uScale[j- grp2] = uScale[nConfigs-1]; // set the selected dataset to the new value
+          trueLo[j- grp2] = trueLo[nConfigs-1]; // set the selected dataset to the new value
+          trueHi[j- grp2] = trueHi[nConfigs-1]; // set the selected dataset to the new value
+          ADC[j-grp2] = ADC[nConfigs-1]; // set the selected dataset to the new value
           saveCalData(); // save the data unless the button pressed was "don't save"
         }
-        aC = j-nButtons-cButtons; // sets the active config to either the dataset selected or the temporary set stored in set 5 (was also -1)
+        aC = j-grp2; // sets the active config to either the dataset selected or the temporary set stored in set 5
         calStage++; // move on to the next calibration stage
       }
     }
+
+// specifically deals with the timebase buttons (20-25)    
+  } else if (bActive[4]) { // if the timebase button has been selected...
+    for (int j = grp3; j < grp4; j++) {
+      if (bPress[j] && !bHeld[j]) {
+        speed = speeds[j-grp3]; //set the speed to the corresponding value
+        bActive[4] = false; // deactivate the request to set the timebase
+        clearPlotArea(); // clears the plot are to erase the selection buttons
+        drawGridLines(lMargin, rMargin-1); // refresh horizontal gridlines
+        drawHorizontalScale(); // redraw the horizontal scale using the selected timebase
+        xPos = speed; // resets the x position of the trace to zero + speed to start drawing a new trace (was 0)
+        oldX = 0; // resets the previous x vale to zero too so no spurious line is drawn
+        oX = 0; // sets the intermediate frame old-x position to 0 too
+        oldY = yPos; // sets the previous y position to the current so no spurious line is drawn
+      }
+    }
   }
-  
+  // clearPlotArea(); // ensures a clear plot area before updating the buttons
   buttons(); // redraw the buttons (as they may have changed state)
 }
 
@@ -247,4 +282,16 @@ void clearWinArea() { // clear the area where timing windows and timing data is 
   fill(bgFill); // set the fill colour to the background colour of the screen
   stroke(bgFill); // set the line colour to the background colour of the screen
   rect (winXpos, 0, progWidth, progHeight); // blanks the whole area that could have windows & timings drawn in
+}
+
+boolean otherButton(int refBut) { // a function to determine if any other buttons are being held
+// the function receives the number button which is known to be pressed and the function then checks if any other button
+// is flagged as being held, if there is another button being pressed then it returns true, otherwise it returns false
+  boolean foundButtonPressed = false;
+  for (byte i=0; i<totalButtons; i++) {
+    if (bHeld[i] && i !=refBut) {
+      foundButtonPressed = true;
+    }
+  }
+  return foundButtonPressed;
 }

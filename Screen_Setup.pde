@@ -1,7 +1,7 @@
 // declare variables which define the screen layout
 int progWidth = 1366; // defines the width of the entire program window
 int progHeight = 768; // defines the height of the entire program window 
-int plotWidth = 700; // defines  the width of the display window
+int plotWidth = pW; // defines  the width of the display window
 int plotHeight = 514; // defines  the height of the display, 514 is due to thickness of trace (was 513)
 int lMargin = 40; // defines the width & so the position of the left margin
 int rMargin = lMargin + plotWidth; // defines the position of the right margin (from 0)
@@ -78,14 +78,19 @@ void defineWindows() { // this function assigns values to the timing window vari
 }
 
 void buttons() { // this function is called universally and determines which buttons to draw based on the current screen
-  if (!bActive[3] && !bActive[5]) {
-    drawButtons(0, nButtons-1); // if not in calibraiton mode draw normal buttons
+  if (bActive[4]) {
+    drawButtons(nButtons+cButtons+dButtons, nButtons+cButtons+dButtons+tButtons-1); // draw timebase buttons
   }
-  else if (calStage <7) {
-    drawButtons(nButtons, nButtons+cButtons-1); // draw the calibration buttons
-  } else if (calStage == 7) {
-    drawButtons(tButtons-dButtons, tButtons-1); // draw the file operation buttons
+  else if (bActive[3] || bActive[5]) {
+    if (calStage ==0) {
+      drawButtons(nButtons+4, nButtons+5);
+    } else if (calStage >0 && calStage <8) {
+      drawButtons(nButtons, nButtons+cButtons-3); // draw the calibration buttons
+    } else if (calStage == 8) {
+      drawButtons(nButtons+cButtons, nButtons+cButtons+dButtons-1); // draw the file operation buttons
+    }
   }
+  else drawButtons(0, nButtons-1); // draw the normal buttons
 }
 
 void drawButtons(int lo, int hi) { // draws the button in the range specified e.g., 0..3. The importing of button numbers
