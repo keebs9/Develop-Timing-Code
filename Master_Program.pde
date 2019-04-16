@@ -6,15 +6,16 @@ Serial myport; // create a serial object
 
 // declare variables which are used throughout the program. Note that variables are declared in the tabs from left to right
 
-int dataInt; // stores the integer value of the acquired data
+int pW = 850; // this sets the plot width, it has to be set here as it sets up variables in other tabs
+int[] dataInt = new int[2]; // stores the 2 integer values of the acquired data channels
 float pressure = 0; // stores the pressure input in pressure units
 byte nConfigs = 5; // defines the number of active configs, note that the last profile [5] holds the new config during calibration
 int msStart; // stores the start time of the program in ms
 int startDelay = 2000; // defines the initial delay before starting measurement (avoids blip as Arduino resets) (was 1700)
-byte fps = 59; // defines the number of frames per second the program should run at
+byte fps = 100; // defines the number of frames per second the program should run at (note Arduino sampling rate is 100Hz)
 byte subFrames = 20; // defines the number of small plot steps to take in each real frame (must be at least 2)
 // subFrames improves plot appearance in response to rapid changes of vertical position (magnitude)
-float speed = 0.5; // defines the scroll speed of the plot (also influenced by frame rate) (was 0.5)
+float speed = (pW/(15.0*fps)); // defines the scroll speed of the plot (also influenced by frame rate), default is for 15s timespan
 float cX =0; // stores an intermediate x-position as the frame is built-up
 float cY; // stores an intermediate pressure value as the frame is built-up
 float oX; // stores an intermediate previous x-position as the frame is built-up
@@ -47,7 +48,7 @@ void draw() {
   msNow = millis();
   if (mousePressed) whatSelected(); // if the left mouse button is being pressed
   else {
-    for (byte i=0; i<(tButtons); i++) { // repeat for the number of buttons
+    for (byte i=0; i<(totalButtons); i++) { // repeat for the number of buttons
       bPress[i] = false; // the button isn't being pressed
       bHeld[i] = false; // the button isn't being held
       butPress = false; // no buttons can be being pressed
@@ -62,16 +63,20 @@ void draw() {
   if (bActive[3] || bActive[5]) { // if in calibration mode...
     drawCalScreen(); // draw the calibration screen (also used for altering the scales)
   }
+  else if (bActive[4]) {
+    //selectTimebase(); // if the timebase button has been selected then presnt timebase options to the user
+  }
   else if (msNow > msStart + startDelay){ // if not in any special mode & not in start-up delay, draw usual screen
     advanceTrace();  // progress the X position of the trace
     drawScales(); // refresh the left & right scales as the plot line thickness means it can encroach over them
   }
   
-  if (updateStartNextButton) { // if the timing routine hsa flagged the need for the start-next-phase button to be re-drawn...
+  if (updateStartNextButton) { // if the timing routine has flagged the need for the start-next-phase button to be re-drawn...
     updateStartNextButton = false; // reset the flag
     drawButtons(6,6); // draw just the start-next-phase button
   }
-}
+} 
+  
 
 void serialEvent(Serial myport) {
   // the function which reads the actual data from the Arduino through the USB port
@@ -79,21 +84,22 @@ void serialEvent(Serial myport) {
 
   dataStr = myport.readStringUntil( '\n' ); // read the whole line
   
-  if (dataStr != null) { // if there is some data (and so isn't null) and not during startup period...
+  if (dataStr != null) { // if there is some data (and so isn't null)
     dataStr = trim(dataStr); // trim function removes any extra spaces
-    dataInt = int(dataStr); // converts the text based number to a numerical value, an integer
-    
+    dataInt = int(split(dataStr, '\t'));
+        
     if (bActive[7]) {
       outputMs.println(millis()); // writes the time stamp to the timings file if timings are on
     }
     
-    pressure = map(dataInt, minRaw[aC], maxRaw[aC], trueLo[aC], trueHi[aC]); // maps the pressure to the scale
+    // maps the pressure vaule from the active ADC channel to the scale using the calibration data
+    pressure = map(dataInt[ADC[aC]], minRaw[aC], maxRaw[aC], trueLo[aC], trueHi[aC]);
     // *** this would be a good place to flag over/under limit ***
     
-    pressure = constrain(pressure, lScale[aC], uScale[aC]); // constrain pressure to scale limits
+    pressure = constrain(pressure, lScale[aC], uScale[aC]); // constrain pressure to scale limits of the plot
     oldY = yPos; // updates previous Y position
-    yPos = round(map(pressure, lScale[aC], uScale[aC], 0, plotHeight-2)); // scales the input to the plot (was int, now round)
-    timing();
+    yPos = round(map(pressure, lScale[aC], uScale[aC], 0, plotHeight-2)); // scales the Y position to the veritcal plot size in pixels
+    timing(); // runs the timing function which checks if the current pressure is within a monitored pressure window
   }
 }
 

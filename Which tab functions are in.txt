@@ -1,0 +1,74 @@
+Things to fix / add
+Need a start / stop button as cough assistor starts at zero.
+Possibly add a start on change of cycle button (to fix the above).
+Possibly add a stop capture button (to help with the above).
+Add a change scale button.
+Add a reset all times button.
+Add a save scale and timing windows profile
+
+Where each function is located
+
+MASTER tab
+	Setup
+	draw
+	serialEvent
+	advanceTrace
+
+BUTTON_SETUP tab
+	defineButtons
+
+CALIBRATE tab
+	drawCalScreen
+	setUnits
+	requestPressure
+	getPressure
+	setScaleLimits
+	askDaveData
+	exitCalibration
+	suggestValue
+	keyReleased
+
+FILE_OP tab
+	saveCalData
+	loadCalData
+	listCalData
+	startRecording
+	stopRecording
+	startRecStamps
+	stopRecStamps
+
+PLOT_TRACE tab
+	drawPlot
+	blankAhead
+	clearPlotArea
+
+SCALES tab
+	drawScales
+	drawGridLines
+	drawHorizontalScale
+	selectTimebase
+
+SCREEN_SETUP tab
+	screenSetup
+	defineWindows
+	buttons
+	drawButtons
+	darken
+	setWindowHeight
+
+SELECTIONS tab
+	whatSelected
+	checkButtonPress
+	checkWinowDrag
+	actionButtons
+	clearWinArea
+otherButton
+
+TIMING tab
+	timing
+	resetTiming
+
+TIMING_DRAW tab
+	updateTimingData
+	drawDataCaptions
+	drawMoveableWindows
