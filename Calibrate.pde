@@ -43,9 +43,12 @@ void drawCalScreen() { // a routine to take the user through a calibration proce
   else
   if (calStage == 4 || calStage == 7) setScaleLimits(); // suggest a value for the bottom of the scale
   else
-  if (calStage == 8) askSaveData();
+  if (calStage == 8) askSaveData(); // offer to save in 1 of 4 profiles or use calibration without saving
+  else
+  if (calStage == 10) askLoadData(); // offer to load 1 of 4 profiles or cancel without loading 
   else
   if (calStage>8) exitCalibration(); // if all calibration steps now complete then exit calibration
+  // (if calStage 9 after saving or 11 after laoding)
 }
 
 void setRange() {
@@ -140,15 +143,29 @@ void setScaleLimits() {
   else lScale[nConfigs-1] = kbVal; // assign the current value to the lower scale limit
 }
 
-void askSaveData(){
+void askSaveData() {
   // prompts the user to save the new calibration data in 1 of 4 profiles, or to use it without saving
   buttons(); // draw the calibration buttons
   listCalData(); // prints the text desriptions of the currently saved configs over the buttons 
   textSize(30); // sets the font size for the calibration screen text
   fill(0, 0, blueShade);
-  text("Please select a profile to save the data to", lMargin+30, tMargin+40);
-  text("or click don't save to use the calibration", lMargin+30, tMargin+77);
-  text("without saving the data", lMargin+30, tMargin+134);
+  text("Please select a profile to save the data to", lMargin+50, tMargin+40);
+  text("or click don't save to use the calibration", lMargin+50, tMargin+77);
+  text("without saving the data", lMargin+50, tMargin+134);
+}
+
+void askLoadData() {
+  // allows the user to load a previous profile (calibration & scale) or cancel the operation
+  bText[nButtons+cButtons+4] = "Cancel"; // temprarily changes the "Don't Save" button text
+  buttons(); // draw the relevent buttons
+  bText[nButtons+cButtons+4] = "Don't Save";  // restores the button text
+  listCalData(); // prints the text desriptions of the currently saved configs over the buttons 
+  textSize(30); // sets the font size for the calibration screen text
+  fill(0, 0, blueShade);
+  text("Please select a profile to load the calibration", lMargin+50, tMargin+40);
+  text("and scale data from, or click cancel to continue", lMargin+50, tMargin+77);
+  text("using the curretnt data. Note that the scale can", lMargin+50, tMargin+114);
+  text("be adjusted after the calibration data is loaded", lMargin+50, tMargin+151);
 }
 
 void exitCalibration() {
@@ -158,6 +175,7 @@ void exitCalibration() {
   calStage = -1; // clears the current calibration stage
   bActive[3] = false; // resets the calibration button's status to inactive
   bActive[5] = false; // resets the adjust scale button's status to inactive
+  bActive[8] = false; // resets the load profile button's status to inactive
   xPos = speed; // resets the x position of the trace to zero + speed to start drawing a new trace (was 0)
   oldX = 0; // resets the previous x vale to zero too so no spurious line is drawn
   oX = 0; // sets the intermediate frame old-x position to 0 too

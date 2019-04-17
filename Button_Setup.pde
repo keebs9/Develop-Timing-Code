@@ -1,5 +1,5 @@
 // declare all the vaiabled which are generic to all the buttons e.h., how many of each group
-byte nButtons = 8; // defines the total number of "normal" buttons
+byte nButtons = 9; // defines the total number of "normal" buttons
 byte cButtons = 6; // defines the total number of "calibration" buttons
 byte dButtons = 5; // defines the total number of "data" buttons (used for save and load actions)
 int tButtons = 6; // defines the total number of "timebase" buttons
@@ -11,7 +11,7 @@ int grp4 = nButtons + cButtons + dButtons + tButtons; // short variable to store
 int totalButtons = nButtons + cButtons + dButtons + tButtons; // stores the total number of buttons
 // (same as last group at moment but more groups could be added) 
 
-byte xOff = 5; // defines an X value offset for the buttons text so it is inset slightly
+byte xOff = 8; // defines an X value offset for the buttons text so it is inset slightly
 byte yOff = 20; // defines a Y value offset for the buttons text as text Y coordinates indicates bottom of text not the top
 byte shadow = 2; // defines the offset of the selected button shadow
 
@@ -80,13 +80,13 @@ void defineButtons(){
   
   // define button six (Alter Scale)
   bX1[5] = bX1[3]; // top left corner (x)
-  bY1[5] = progHeight -75; // top left corner (y)
+  bY1[5] = progHeight -55; // top left corner (y)
   bX2[5] = bX1[5] + 100; // bottom right corner (x)
-  bY2[5] = bY1[5] + 55; // bottom right corner (y)
+  bY2[5] = bY1[5] + 30; // bottom right corner (y)
   bPress[5] = false;
   bHeld[5] = false;
   bActive[5] = false;
-  bText[5] = "Alter" + '\n' + "scale"; // the '/n' adds a new line command to the string
+  bText[5] = "Set scale"; // the '/n' adds a new line command to the string
   
   // define button seven (Start on new phase)
   bX1[6] = bX1[2] + 160; // top left corner (x)
@@ -108,6 +108,16 @@ void defineButtons(){
   bActive[7] = false;
   bText[7] = "Start" + '\n' + "recording"; // the '/n' adds a new line command to the string
   
+  //define button nine (load profile)
+  bX1[8] = bX1[7] + 160; // top left corner (x)
+  bY1[8] = 20; // top left corner (y)
+  bX2[8] = bX1[8] + 100; // bottom right corner (x)
+  bY2[8] = bY1[8] + 55; // bottom right corner (y)
+  bPress[8] = false;
+  bHeld[8] = false;
+  bActive[8] = false;
+  bText[8] = "Load" + '\n' + "profile"; // the '/n' adds a new line command to the string
+  
 // set the data, calibration and timebase buttons' activity flags to default
   for (byte i = nButtons; i< totalButtons; i++) {
     bPress[i] = false; // not being pressed
@@ -115,89 +125,89 @@ void defineButtons(){
     bActive[i] = true; // active so that the text is drawn larger and in blue
   }
 
-// assign values to the "calibration" buttons (9 to 14)
+// assign values to the "calibration" buttons (10 to 15)
   
   // define 1st calibration button (cmH2O)
-  bX1[nButtons] = lMargin + 160; // top left corner (x) (nButtons is used in case more buttons are added)
-  bY1[nButtons] = tMargin + 200; // top left corner (y)
-  bX2[nButtons] = lMargin + 260; // bottom right corner (x)
-  bY2[nButtons] = tMargin + 230; // bottom right corner (y)
+  bX1[nButtons] = lMargin + 190; // top left corner (x) (nButtons is used in case more buttons are added)
+  bY1[nButtons] = tMargin + 180; // top left corner (y)
+  bX2[nButtons] = lMargin + 290; // bottom right corner (x)
+  bY2[nButtons] = tMargin + 210; // bottom right corner (y)
   bText[nButtons] = "cmH2O"; // holds the unit text
   units[aC] = bText[nButtons]; // sets the currently displayed units to cmH2O
    
   // define 2nd calibration button (mBar)
-  bX1[nButtons+1] = rMargin - 260; // top left corner (x)
-  bY1[nButtons+1] = tMargin + 200; // top left corner (y)
-  bX2[nButtons+1] = rMargin - 160; // bottom right corner (x)
-  bY2[nButtons+1] = tMargin + 230; // bottom right corner (y)
+  bX1[nButtons+1] = rMargin - 290; // top left corner (x)
+  bY1[nButtons+1] = tMargin + 180; // top left corner (y)
+  bX2[nButtons+1] = rMargin - 190; // bottom right corner (x)
+  bY2[nButtons+1] = tMargin + 210; // bottom right corner (y)
   bText[nButtons+1] = "mBar"; // holds the unit text
   
   // define 4rd calibration button (mmHg)
-  bX1[nButtons+2] = lMargin + 160; // top left corner (x)
+  bX1[nButtons+2] = lMargin + 190; // top left corner (x)
   bY1[nButtons+2] = tMargin + 300; // top left corner (y)
-  bX2[nButtons+2] = lMargin + 260; // bottom right corner (x)
+  bX2[nButtons+2] = lMargin + 290; // bottom right corner (x)
   bY2[nButtons+2] = tMargin + 330; // bottom right corner (y)
   bText[nButtons+2] = "mmHg"; // holds the unit text
   
   // define 4th calibration button (PSI)
-  bX1[nButtons+3] = rMargin - 260; // top left corner (x)
+  bX1[nButtons+3] = rMargin - 290; // top left corner (x)
   bY1[nButtons+3] = tMargin + 300; // top left corner (y)
-  bX2[nButtons+3] = rMargin - 160; // bottom right corner (x)
+  bX2[nButtons+3] = rMargin - 190; // bottom right corner (x)
   bY2[nButtons+3] = tMargin + 330; // bottom right corner (y)
   bText[nButtons+3] = "PSI";  // holds the unit text
   
   // define 5th calibration button (Low Range)
-  bX1[nButtons+4] = lMargin + 200; // top left corner (x)
+  bX1[nButtons+4] = lMargin + 250; // top left corner (x)
   bY1[nButtons+4] = tMargin + 200; // top left corner (y)
-  bX2[nButtons+4] = lMargin + 300; // bottom right corner (x)
+  bX2[nButtons+4] = lMargin + 350; // bottom right corner (x)
   bY2[nButtons+4] = tMargin + 230; // bottom right corner (y)
   bText[nButtons+4] = "Low Range";  // holds the unit text
   
   // define 6th calibration button (High Range)
-  bX1[nButtons+5] = lMargin + 400; // top left corner (x)
+  bX1[nButtons+5] = lMargin + 500; // top left corner (x)
   bY1[nButtons+5] = tMargin + 200; // top left corner (y)
-  bX2[nButtons+5] = lMargin + 500; // bottom right corner (x)
+  bX2[nButtons+5] = lMargin + 600; // bottom right corner (x)
   bY2[nButtons+5] = tMargin + 230; // bottom right corner (y)
   bText[nButtons+5] = "High Range";  // holds the unit text
   
-// assigns data to the save/load data buttons (15 to 19)
+// assigns data to the save/load data buttons (16 to 20)
   
   // define 1st data button (profile 1)
-  bX1[nButtons+cButtons] = lMargin + 100; // top left corner (x) (nButtons+cButtons is used in case more buttons are added)
-  bY1[nButtons+cButtons] = tMargin + 160; // top left corner (y)
-  bX2[nButtons+cButtons] = lMargin + 260; // bottom right corner (x)
-  bY2[nButtons+cButtons] = tMargin + 280; // bottom right corner (y)
+  bX1[nButtons+cButtons] = lMargin + 150; // top left corner (x) (nButtons+cButtons is used in case more buttons are added)
+  bY1[nButtons+cButtons] = tMargin + 180; // top left corner (y)
+  bX2[nButtons+cButtons] = lMargin + 310; // bottom right corner (x)
+  bY2[nButtons+cButtons] = tMargin + 300; // bottom right corner (y)
   bText[nButtons+cButtons] = "Set A";  // holds the unit text
   
   // define 2nd data button (profile 2)
-  bX1[nButtons+cButtons+1] = rMargin - 260; // top left corner (x)
-  bY1[nButtons+cButtons+1] = tMargin + 160; // top left corner (y)
-  bX2[nButtons+cButtons+1] = rMargin - 100; // bottom right corner (x)
-  bY2[nButtons+cButtons+1] = tMargin + 280; // bottom right corner (y)
+  bX1[nButtons+cButtons+1] = rMargin - 310; // top left corner (x)
+  bY1[nButtons+cButtons+1] = tMargin + 180; // top left corner (y)
+  bX2[nButtons+cButtons+1] = rMargin - 150; // bottom right corner (x)
+  bY2[nButtons+cButtons+1] = tMargin + 300; // bottom right corner (y)
   bText[nButtons+cButtons+1] = "Set B"; // holds the unit text
   
   // define 3rd data button (profile 3)
-  bX1[nButtons+cButtons+2] = lMargin + 100; // top left corner (x)
-  bY1[nButtons+cButtons+2] = tMargin + 320; // top left corner (y)
-  bX2[nButtons+cButtons+2] = lMargin + 260; // bottom right corner (x)
-  bY2[nButtons+cButtons+2] = tMargin + 440; // bottom right corner (y)
+  bX1[nButtons+cButtons+2] = lMargin + 150; // top left corner (x)
+  bY1[nButtons+cButtons+2] = tMargin + 340; // top left corner (y)
+  bX2[nButtons+cButtons+2] = lMargin + 310; // bottom right corner (x)
+  bY2[nButtons+cButtons+2] = tMargin + 460; // bottom right corner (y)
   bText[nButtons+cButtons+2] = "Set C"; // holds the unit text
   
   // define 4th data button (profile 4)
-  bX1[nButtons+cButtons+3] = rMargin - 260; // top left corner (x)
-  bY1[nButtons+cButtons+3] = tMargin + 320; // top left corner (y)
-  bX2[nButtons+cButtons+3] = rMargin - 100; // bottom right corner (x)
-  bY2[nButtons+cButtons+3] = tMargin + 440; // bottom right corner (y)
+  bX1[nButtons+cButtons+3] = rMargin - 310; // top left corner (x)
+  bY1[nButtons+cButtons+3] = tMargin + 340; // top left corner (y)
+  bX2[nButtons+cButtons+3] = rMargin - 150; // bottom right corner (x)
+  bY2[nButtons+cButtons+3] = tMargin + 460; // bottom right corner (y)
   bText[nButtons+cButtons+3] = "Set D";  // holds the unit text
   
-  // define 5th data button (don't save)
-  bX1[nButtons+cButtons+4] = rMargin - 400; // top left corner (x)
-  bY1[nButtons+cButtons+4] = tMargin + 285; // top left corner (y)
-  bX2[nButtons+cButtons+4] = rMargin - 300; // bottom right corner (x)
-  bY2[nButtons+cButtons+4] = tMargin + 315; // bottom right corner (y)
+  // define 5th data button (don't save / cancel)
+  bX1[nButtons+cButtons+4] = lMargin + (plotWidth/2) - 50; // top left corner (x)
+  bY1[nButtons+cButtons+4] = tMargin + 305; // top left corner (y)
+  bX2[nButtons+cButtons+4] = bX1[nButtons+cButtons+4] + 100; // bottom right corner (x)
+  bY2[nButtons+cButtons+4] = tMargin + 335; // bottom right corner (y)
   bText[nButtons+cButtons+4] = "Don't Save";  // holds the unit text
   
-// assigns data to the timebase buttons (20 to 25)
+// assigns data to the timebase buttons (21 to 26)
   
   // assign button variables automatically
   int xP = pW / 5; // local variable used to store the X Position of the current button
