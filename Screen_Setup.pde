@@ -81,12 +81,12 @@ void buttons() { // this function is called universally and determines which but
   if (bActive[4]) {
     drawButtons(nButtons+cButtons+dButtons, nButtons+cButtons+dButtons+tButtons-1); // draw timebase buttons
   }
-  else if (bActive[3] || bActive[5]) {
+  else if (bActive[3] || bActive[5] || bActive[8]) { // if in one of the calibration modes...
     if (calStage ==0) {
-      drawButtons(nButtons+4, nButtons+5);
+      drawButtons(nButtons+4, nButtons+5); // draw the range selection buttons
     } else if (calStage >0 && calStage <8) {
       drawButtons(nButtons, nButtons+cButtons-3); // draw the calibration buttons
-    } else if (calStage == 8) {
+    } else if (calStage == 8 || calStage == 10) {
       drawButtons(nButtons+cButtons, nButtons+cButtons+dButtons-1); // draw the file operation buttons
     }
   }

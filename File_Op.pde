@@ -52,9 +52,9 @@ void listCalData() { // displays the 4 datasets and allows 1 to be selected for 
     textSize(14);
     // the text lines use the text from the calibration buttons but the positions from the data buttons, hence i & j
     // the k referenecs are setting the index to 0..3 rather than say 8-11
-    text("Units: " + bText[j] + '\n' + "Low: " + str(lScale[k]) + bText[j], bX1[i] + xOff, bY1[i] + yOff + 20);
-    text("High: " + str(uScale[k]) + bText[j], bX1[i] + xOff, bY1[i] + yOff + 62);
-    text(range[ADC[k]], bX1[i] + xOff, bY1[i] + yOff + 84);
+    text(range[ADC[k]], bX1[i] + xOff, bY1[i] + yOff + 20);
+    text("Units: " + bText[j] + '\n' + "Low: " + str(lScale[k]) + bText[j], bX1[i] + xOff, bY1[i] + yOff + 40);
+    text("High: " + str(uScale[k]) + bText[j], bX1[i] + xOff, bY1[i] + yOff + 82);
   }
 }
 

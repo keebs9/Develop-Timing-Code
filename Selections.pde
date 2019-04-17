@@ -27,7 +27,7 @@ void checkButtonPress() { // is a button being pressed?
     if ((xM >= bX1[i] && xM <= bX2[i]) && (yM >= bY1[i] && yM <= bY2[i])) { // checks the mouse position against button co-ordinates
       
       // if a normal button 0-7 and not in a special mode e.g., calibration mode, or a higher button but in certain modes...
-      if ((i<grp1 && cS== -1) || (i>=grp1+4 && i<grp2 && cS== 0) || (i>=grp1 && i<grp1+4 && cS==1) || (i>=grp2 && i<grp3 && cS== 8) || (i>=grp3 && i<grp4 && bActive[4] )) { 
+      if ((i<grp1 && cS== -1) || (i>=grp1+4 && i<grp2 && cS== 0) || (i>=grp1 && i<grp1+4 && cS==1) || (i>=grp2 && i<grp3 && (cS== 8 || cS==10)) || (i>=grp3 && i<grp4 && bActive[4] )) { 
         if (!otherButton(i)) bPress[i] = true; // set the current button to pressed if nothing else being pressed
         actionButtons(); // process the button selection
         butPress = true; // sets the logical variable butPress to true, this is tested elsewhere in the program
@@ -216,8 +216,17 @@ void actionButtons() { // take specific actions depending on which button has be
       bText[7] = "Start" + '\n' + "recording";
     }
   }
+  
+// specifically deals with button 9 which allows a configuration to be loaded
+  // if button 8 is exclusively pressed & not already in calibration mode...
+  if (bPress[8] && !bActive[8] && !otherButton(8)) {
+    bActive[8] = true; // set button 8 as active, this is used to determine that the program is in calibration mode
+    calStage = 10; // sets the progress of calibration to 10 (outside of the standard routine which ends in save)
+    clearWinArea(); // blanks out all the timing data
+    clearPlotArea(); // clears the plot area ready to be used by the calibration routine
+  }
 
-// specifically deals with the calibration buttons (9-14)
+// specifically deals with the calibration buttons (10-15)
   if (calStage == 1) { // if acquiring the pressure units during calibration stage 0...
     for (int j=grp1; j < grp1+4; j++) { // repeat for all the calibration buttons
       if (bPress[j] && !bHeld[j]) { // if the button was pressed...
@@ -237,28 +246,31 @@ void actionButtons() { // take specific actions depending on which button has be
       }
     }
 
-// specifically deals with the data save buttons (15-19)    
-  } else if (calStage == 8) { // if querying whether the data should be saved during calibration stage 7...
-     for (int j = grp2; j < grp3; j++) { // repeat for all the calibration buttons (was nBut + cBut -1)
+// specifically deals with the data save buttons (16-20)    
+  } else if (calStage == 8 || calStage == 10) { // if querying whether the data should be saved during calibration stage 7...
+     for (int j = grp2; j < grp3; j++) { // repeat for all the calibration buttons
       if (bPress[j] && !bHeld[j]) { // if the button was pressed...
         bActive[j] = true; // set the button press to active
         bHeld[j] = true; // set the button Held to true meaning it was already pressed and actioned
-        if (j<totalButtons-1) { // if not the "don't save" button which has been pressed then...
-          minRaw[j- grp2] = minRaw[nConfigs-1]; // set the selected dataset to the new value  //<>//
-          maxRaw[j- grp2] = maxRaw[nConfigs-1]; // set the selected dataset to the new value
-          lScale[j- grp2] = lScale[nConfigs-1]; // set the selected dataset to the new value
-          uScale[j- grp2] = uScale[nConfigs-1]; // set the selected dataset to the new value
-          trueLo[j- grp2] = trueLo[nConfigs-1]; // set the selected dataset to the new value
-          trueHi[j- grp2] = trueHi[nConfigs-1]; // set the selected dataset to the new value
-          ADC[j-grp2] = ADC[nConfigs-1]; // set the selected dataset to the new value
-          saveCalData(); // save the data unless the button pressed was "don't save"
+        if (j<grp3-1) { // if not the "don't save" button which has been pressed & in save mode...
+          if (calStage == 8) { // if in the save mode rather than the load mode...
+            minRaw[j- grp2] = minRaw[nConfigs-1]; // set the selected dataset to the new value
+            maxRaw[j- grp2] = maxRaw[nConfigs-1]; // set the selected dataset to the new value
+            lScale[j- grp2] = lScale[nConfigs-1]; // set the selected dataset to the new value
+            uScale[j- grp2] = uScale[nConfigs-1]; // set the selected dataset to the new value
+            trueLo[j- grp2] = trueLo[nConfigs-1]; // set the selected dataset to the new value
+            trueHi[j- grp2] = trueHi[nConfigs-1]; // set the selected dataset to the new value
+            ADC[j-grp2] = ADC[nConfigs-1]; // set the selected dataset to the new value
+            saveCalData(); // save the data unless the button pressed was "don't save"
+          }
+          aC = j-grp2; // sets the active config to the dataset selected
         }
-        aC = j-grp2; // sets the active config to either the dataset selected or the temporary set stored in set 5
+        if (calStage == 8 && j == grp3-1) aC = j-grp2; // sets the active config to the temporary set stored in set 5 (if not saving)
         calStage++; // move on to the next calibration stage
       }
     }
 
-// specifically deals with the timebase buttons (20-25)    
+// specifically deals with the timebase buttons (21-26)    
   } else if (bActive[4]) { // if the timebase button has been selected...
     for (int j = grp3; j < grp4; j++) {
       if (bPress[j] && !bHeld[j]) {

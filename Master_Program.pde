@@ -60,7 +60,7 @@ void draw() {
     }
   }
 
-  if (bActive[3] || bActive[5]) { // if in calibration mode...
+  if (bActive[3] || bActive[5] || bActive[8]) { // if in calibration mode...
     drawCalScreen(); // draw the calibration screen (also used for altering the scales)
   }
   else if (bActive[4]) {
