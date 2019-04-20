@@ -1,7 +1,7 @@
 // declare the variables used primarily to calibrate the pressure sensor
-boolean enter = false; // shows if the enter key has been pressed, this is often used to progress the calibration
-boolean suggested = false; // shows if a number has already been suggested to the user
-boolean high = true; // states whether the current calibration is high (true) or low (false)
+boolean enter = false; // true if the enter key has been pressed, this is often used to progress the calibration
+boolean suggested = false; // true if a number has already been suggested to the user
+boolean high = true; // true if the current calibration is high, otherwise it will be flaseM
 int blueShade = 140; // defines the shade of blue used to display the calibration instructional text
 int calStage = -1; //stores the current stage of calibration the user is at (-1 means calibraiton not in progress)
 float[] minRaw = new float[nConfigs]; // stores the minimum raw calibration value (0 is minimum)

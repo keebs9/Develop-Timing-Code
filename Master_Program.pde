@@ -9,6 +9,7 @@ Serial myport; // create a serial object
 int pW = 850; // this sets the plot width, it has to be set here as it sets up variables in other tabs
 int[] dataInt = new int[2]; // stores the 2 integer values of the acquired data channels
 float pressure = 0; // stores the pressure input in pressure units
+float truePressure = 0; // stores the true pressure value in case it is out of range
 byte nConfigs = 5; // defines the number of active configs, note that the last profile [5] holds the new config during calibration
 int msStart; // stores the start time of the program in ms
 int startDelay = 2000; // defines the initial delay before starting measurement (avoids blip as Arduino resets) (was 1700)
@@ -39,7 +40,6 @@ void setup() {
   loadCalData(); // load the 4 calibration profiles
   defineButtons(); // initialises the button variables
   screenSetup(); // initialises the display e.g., size, background etc.
-  startRecStamps();
 }
 
 void draw() {
@@ -88,13 +88,10 @@ void serialEvent(Serial myport) {
     dataStr = trim(dataStr); // trim function removes any extra spaces
     dataInt = int(split(dataStr, '\t'));
         
-    if (bActive[7]) {
-      outputMs.println(millis()); // writes the time stamp to the timings file if timings are on
-    }
-    
     // maps the pressure vaule from the active ADC channel to the scale using the calibration data
     pressure = map(dataInt[ADC[aC]], minRaw[aC], maxRaw[aC], trueLo[aC], trueHi[aC]);
-    // *** this would be a good place to flag over/under limit ***
+    truePressure = pressure; // copies the presure value to the true pressure variable, before pressure is constrained to scale
+    clipped = (pressure > uScale[aC] || pressure < lScale[aC]); // clipped flag if pressure outside current visible scale
     
     pressure = constrain(pressure, lScale[aC], uScale[aC]); // constrain pressure to scale limits of the plot
     oldY = yPos; // updates previous Y position
