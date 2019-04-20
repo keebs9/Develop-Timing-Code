@@ -1,8 +1,8 @@
 // declare variables used for the selectable windows
 float[] upper = new float[3]; // stores the upper limit of the 3 timing windows (in pressure units)
 float[] lower = new float[3]; // stores the lower limit of the 3 timing windows (in pressure units)
-boolean[] upperDrag = new boolean[3]; // stores the upper line still selected and being dragged
-boolean[] lowerDrag = new boolean[3]; // stores the lower line still selected and being dragged
+boolean[] upperDrag = new boolean[3]; // true if the upper line is still selected and being dragged
+boolean[] lowerDrag = new boolean[3]; // true if the lower line is still selected and being dragged
 float[] winTopY = new float[3]; // stores the upper Y position of the text box (in pixels)
 float[] winBotY = new float[3]; // stores the lower Y position of the text box (in pixels)
 byte nWin = 3; // stores the number of currently active windows, used in "for loops" processing window actions, default is 3
@@ -23,11 +23,11 @@ int[] start = new int[3]; // stores the window start time for the 3 timing windo
 int[] average = new int[3]; // stores the average cycle time for the 3 timing windows
 int[] count = new int[3]; // stores the number of timing cycles measured for each of the 3 timing windows
 float[] totTime = new float[3]; // stores the accumulated total time spent within the monitored window, for each of 3 windows 
-boolean[] winActive = new boolean[3]; // stores the current status of the 3 timing windows (active if timing already begun)
-boolean[] ignoring = new boolean[3]; // stores the current status of the 3 timing windows
+boolean[] winActive = new boolean[3]; // true if the timing windows is currently active i.e., if timing already begun)
+boolean[] ignoring = new boolean[3]; // true if the timing windows is being ignored because the time < transient period
 int transTime = 100; // defines the duration in ms of transient timings which are to be ignored
-boolean ignore = true; // true if transients are being ignored (tidier than using the button's active variable)
-boolean updateStartNextButton = false; // the button can't be drawn within timing as is outside the draw loop - this flags it to be done
+boolean ignore = true; // mirrors the current windows ifnoring flag (shorter syntax that referencing actual flag)
+boolean updateStartNextButton = false; // when true if flags the button to be refreshed within the draw loop 
 
 void timing() { // acquire & set time stamps when the current pressure is within a monitored window (range)
   for (byte i =0; i<nWin; i++) { // repeat for the number of active pressure windows
@@ -61,10 +61,11 @@ void timing() { // acquire & set time stamps when the current pressure is within
         totTime[i] += msTime[i]; // increments the total time for this window by the current time (only when pressure exits the window)
         average[i] = round(totTime[i] / count[i]); // updates the average time by dividing total time by cycle count
         
-        if (!ignoring[i] && bActive[7]) { // if not ignoring this timing e.g., due to it being transient, and it's being recorded...
+        // if not ignoring this timing e.g., due to it being transient, and it's being recorded, and not waiting for the next cycle...
+        if (!ignoring[i] && bActive[7] && !bActive[6]) {
           // writes the phase number (1,2,3) and the measured phase time (to the nearest 100th of a second) to a new line in the file
           timeStamp = round(msTime[i]/10.0);
-          timeStamp = timeStamp / 100; // if done in one line then it truncates to the nearest second for some reason
+          timeStamp = timeStamp / 100; // if done in one line then it truncates to the nearest second as acting as an integer
           outputData.println(i+1 + "," + timeStamp);
         }
       }

@@ -7,7 +7,7 @@ String[] range = {"Range: low", "Range : high"}; //
 String[] calData = new String[nConfigs]; // stores the config data as strings which can be saved to file, or loaded from file
 String dataFileStamp; // stores the time and date stamp which shall be used in the file name
 PrintWriter outputData; // sets up a file which can be written to on the fly to record timing data
-PrintWriter outputMs; // sets up a file which can be written to live with the time stamps of the data read
+
 
 void saveCalData() { // the code used to save the current calibration data
 // the saving function works by writing an array (set) of text stings to a text file. The data of each dataset are
@@ -67,14 +67,4 @@ void startRecording() {
 void stopRecording() {
   outputData.flush(); // Writes the remaining data to the file
   outputData.close(); // Finishes (closes) the file
-}
-
-void startRecStamps() {
-  dataFileStamp = nf(day(),2,0) + "-" + nf(month(),2,0) + "-" + year() + " @ " + nf(hour(),2,0) + "-" + nf(minute(),2,0) + "_" + nf(second(),2,0); 
-  outputMs = createWriter("Stamps from " + dataFileStamp + ".txt"); // creates a new output file for the timing data
-}
-
-void stopRecStamps() {
-  outputMs.flush(); // Writes the remaining data to the file
-  outputMs.close(); // Finishes (closes) the file
 }

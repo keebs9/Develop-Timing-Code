@@ -3,13 +3,21 @@ int progWidth = 1366; // defines the width of the entire program window
 int progHeight = 768; // defines the height of the entire program window 
 int plotWidth = pW; // defines  the width of the display window
 int plotHeight = 514; // defines  the height of the display, 514 is due to thickness of trace (was 513)
+
 int lMargin = 40; // defines the width & so the position of the left margin
 int rMargin = lMargin + plotWidth; // defines the position of the right margin (from 0)
 int tMargin = 130; // defines the height & so the position of the top margin
 int bMargin = tMargin + plotHeight; // defines the position of the bottom margin (from 0)
+
 int bgFill = 190; // defines the greyscale colour of the background
 int plotFill = 230; // defines the greyscale colour of the plot window
 int grey = 100; // defines the greyscale colour for greyed out text (must be at least 30)
+
+int buttonFill = 250; // defines the fill colour of the buttons
+int buttonOutline = 100; // defines the colour of the buttons' outline
+int buttonShadow = 40; // defines the colour of the buttons' shadow
+int textActive = #0A0ABE; // defines the colour of the button's text when the button is active
+int textInactive = 0; // defines the colour of the buttons' text when the button is inactive
 
 void screenSetup() { // this is called only during setup at program launch, it builds the screen elements
   background(bgFill); // sets the background fill colour and uses it to fill the screen
@@ -39,6 +47,7 @@ void screenSetup() { // this is called only during setup at program launch, it b
   drawDataCaptions(); // this labels the 3 timing window data areas as Window 1"... Window 3"
   drawMovableWindows(); // this draws the 3 coloured blocks which represent the current timing windows
   updateTimingData(); // this updates the data displayed for each of the 3 timing windows
+  drawLivePressureBox(); // this draws the live pressure display window
 }
 
 void defineWindows() { // this function assigns values to the timing window variables e.g., upper & lower values
@@ -97,24 +106,24 @@ void drawButtons(int lo, int hi) { // draws the button in the range specified e.
 // to be drawn makes the function more flexible as it can draw only the buttons currently required for display
   for (int i = lo; i < hi + 1; i++) { // repeat for number of buttons
     if (!bActive[i]) { // if the button isn't selected draw a shadow
-      fill(20); // sets the fill colour of the shadow
-      stroke(20);
+      fill(buttonShadow); // sets the fill colour of the shadow
+      stroke(buttonShadow);
       rect(bX1[i] + shadow, bY1[i] + shadow, bX2[i] + shadow, bY2[i] + shadow); // draws the button shadow
     } else { // erase any previous shadow by using the background colour
       fill(bgFill); // sets the fill colour of the shadow
       stroke(bgFill);
-      rect(bX1[i] + shadow, bY1[i] + shadow, bX2[i] + shadow, bY2[i] + shadow); // draws the button shadow
+      rect(bX1[i] + shadow, bY1[i] + shadow, bX2[i] + shadow, bY2[i] + shadow); // draws a blank box in place of the shadow
     }
 
-    stroke(100); // sets colour of button perimeter
-    fill(240); // sets fill colour for the button
+    stroke(buttonOutline); // sets colour of button perimeter
+    fill(buttonFill); // sets fill colour for the button
     rect(bX1[i], bY1[i], bX2[i], bY2[i]); // draws the button
 
     if (bActive[i]) { // if the current button is latched (active)...
-      fill(10, 10, 190); // sets the text colour
+      fill(textActive); // sets the text colour to the defined active-text colour
       textSize(16); // sets the text size for the button text
     } else {
-      fill(0); // sets the text colour
+      fill(textInactive); // sets the text colour to the defined inactive-text colour
       textSize(14); // sets the text size for the button text
     }
     text(bText[i], bX1[i] + xOff, bY1[i] + yOff); // draws the button text

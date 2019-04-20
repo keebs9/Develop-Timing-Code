@@ -204,7 +204,7 @@ void actionButtons() { // take specific actions depending on which button has be
 // specifically deals with button 8 which turns the recording on / off
   // if button 7 is exclusively pressed but wasn't previously
   if (bPress[7] && !bHeld[7] && !otherButton(7)) {
-    bActive[7] = !bActive[7]; // invert the button6 Held
+    bActive[7] = !bActive[7]; // invert the button ACtive status
     bHeld[7] = true; // set the button Held to true meaning it was already pressed and actioned
     
     if (bActive[7]) {
@@ -212,7 +212,6 @@ void actionButtons() { // take specific actions depending on which button has be
       bText[7] = "Stop" + '\n' + "recording";
     } else {
       stopRecording();
-      stopRecStamps();
       bText[7] = "Start" + '\n' + "recording";
     }
   }

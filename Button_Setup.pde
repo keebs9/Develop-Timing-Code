@@ -21,11 +21,11 @@ int[] bY1 = new int[totalButtons]; // stores the top left Y coordinate of all th
 int[] bX2 = new int[totalButtons]; // stores the bottom right X coordinate of all the buttons
 int[] bY2 = new int[totalButtons]; // stores the bottom right Y coordinate of all the buttons
 String[] bText = new String[totalButtons]; // stores the text of all of the buttons
-boolean[] bPress = new boolean[totalButtons]; // bPress means the cursor is over the button & left button is being pressed
-boolean[] bHeld = new boolean[totalButtons]; // bHeld means you've actioned the button but kept the mouse pressed (prevents rapid toggling)
-boolean[] bActive = new boolean[totalButtons]; // bActive means the buttons function is applied
+boolean[] bPress = new boolean[totalButtons]; // true when the cursor is over the button & left mouse button is being pressed
+boolean[] bHeld = new boolean[totalButtons]; // true when you've actioned the button but kept the mouse pressed (prevents rapid toggling)
+boolean[] bActive = new boolean[totalButtons]; // true when the button's function is applied e.g., ignoring transients or 2-windows in use
 
-boolean startNext = false; // if True instructs the program only to start timing when a new phase is entered
+boolean startNext = false; // if True it instructs the program only to start timing when a new phase is entered
 
 void defineButtons(){
 // assign values to the "normal" buttons (1 to 8)
@@ -80,7 +80,7 @@ void defineButtons(){
   
   // define button six (Alter Scale)
   bX1[5] = bX1[3]; // top left corner (x)
-  bY1[5] = progHeight -55; // top left corner (y)
+  bY1[5] = bY2[3] + 15; // top left corner (y)
   bX2[5] = bX1[5] + 100; // bottom right corner (x)
   bY2[5] = bY1[5] + 30; // bottom right corner (y)
   bPress[5] = false;

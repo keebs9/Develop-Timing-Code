@@ -19,11 +19,13 @@ BUTTON_SETUP tab
 
 CALIBRATE tab
 	drawCalScreen
+	setRange
 	setUnits
 	requestPressure
 	getPressure
 	setScaleLimits
 	askDaveData
+	askLoadData
 	exitCalibration
 	suggestValue
 	keyReleased
@@ -34,13 +36,13 @@ FILE_OP tab
 	listCalData
 	startRecording
 	stopRecording
-	startRecStamps
-	stopRecStamps
 
 PLOT_TRACE tab
 	drawPlot
 	blankAhead
 	clearPlotArea
+	displayPressure
+	drawLivePressureBox
 
 SCALES tab
 	drawScales
@@ -62,7 +64,7 @@ SELECTIONS tab
 	checkWinowDrag
 	actionButtons
 	clearWinArea
-otherButton
+	otherButton
 
 TIMING tab
 	timing
