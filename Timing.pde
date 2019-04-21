@@ -18,6 +18,7 @@ int[] darkG = new int[3]; // stores the darker line colour - G (green) component
 int[] darkB = new int[3]; // stores the darker line colour - B (blue) component
 
 // variables for the actual timing of the pressure windows
+int msNow2; // stores the time now in milliseconds for analysis in the timing routines
 int[] msTime = new int[3]; // stores the time in ms for the 3 timing windows
 int[] start = new int[3]; // stores the window start time for the 3 timing windows
 int[] average = new int[3]; // stores the average cycle time for the 3 timing windows
@@ -30,50 +31,55 @@ boolean ignore = true; // mirrors the current windows ifnoring flag (shorter syn
 boolean updateStartNextButton = false; // when true if flags the button to be refreshed within the draw loop 
 
 void timing() { // acquire & set time stamps when the current pressure is within a monitored window (range)
+  msNow2 = millis(); // captures the current timing for analysis, ensures no time change between analysis steps
   for (byte i =0; i<nWin; i++) { // repeat for the number of active pressure windows
-    if ((pressure > lower[i]) && (pressure <= upper[i])) { // if the pressure is within the current timing window...
+    if ((pressure >= lower[i]) && (pressure <= upper[i])) { // if the pressure is within the current timing window...
       if (winActive[i] == false) { // if timing was not already active...
-        start[i] = millis(); // set the start time of this pressure window to the current time
-        
+        start[i] = msNow2; // set the start time of this pressure window to the current time
+
         if (startNext) { // if was waiting for start of next cycle
           startNext = false; // reset tue startNext logic as can only be used once, must be reactivated by the user
           bActive[6] = false; // sets the button to deactivated so it can be reset by the user
           updateStartNextButton = true; // flags that the button must be redrawn
         }
-                
       } else if (!startNext) { // if it was already being timed and isn't waiting for a new pressure cycle...
-        
+
         // if not ignoring transients OR ignoring them but the time exceeds the ignore period...
-        if ((!ignore) || (ignore && (millis() - start[i] > transTime))) {
-          msTime[i] = millis() - start[i]; // set the duration of this pressure window to the current time - the start time
+        if ((!ignore) || (ignore && (msNow2 - start[i] > transTime))) {
+          msTime[i] = msNow2 - start[i]; // set the duration of this pressure window to the current time - the start time
         }
       }
       winActive[i] = true; // set this pressure window to being active
-    
+
       // if ignoring transients AND the duration is lower than the ignore period...
-      if (ignore && (millis() - start[i] < transTime)) {
+      if (ignore && (msNow2 - start[i] < transTime)) {
         ignoring[i] = true; // tell the timing-data drawing routine that this timing is being ignored and shouldn't be highlighted
       } else ignoring[i] = false; // tell the timing-data drawing routine that this timing is to be highlighted
-    } else { // if the current pressure is outside the timing window
-      if (winActive[i]) { // if the window was being timed then...
-        winActive[i] = false; // set the status to inactive
-        count[i] ++; // increase the number of cycles which have been counted for this window
-        totTime[i] += msTime[i]; // increments the total time for this window by the current time (only when pressure exits the window)
-        average[i] = round(totTime[i] / count[i]); // updates the average time by dividing total time by cycle count
-        
-        // if not ignoring this timing e.g., due to it being transient, and it's being recorded, and not waiting for the next cycle...
-        if (!ignoring[i] && bActive[7] && !bActive[6]) {
-          // writes the phase number (1,2,3) and the measured phase time (to the nearest 100th of a second) to a new line in the file
-          timeStamp = round(msTime[i]/10.0);
-          timeStamp = timeStamp / 100; // if done in one line then it truncates to the nearest second as acting as an integer
-          outputData.println(i+1 + "," + timeStamp);
+    
+    } else { // if the current pressure is outside the window but was within the window in the last pass then...
+        if (winActive[i]) { // if the window was being timed then...
+          winActive[i] = false; // set the window timing status to inactive
+  
+          if (!startNext) { // if not watinig for a cycle change before beginning the timing...
+            count[i] ++; // increase the number of cycles which have been counted for this window
+            totTime[i] += msTime[i]; // increments the total time for this window by the current time (only when pressure exits the window)
+            average[i] = round(totTime[i] / count[i]); // updates the average time by dividing total time by cycle count
+          
+            // if not ignoring this timing e.g., due to it being transient, and it's being recorded, and not waiting for the next cycle...
+            if (!ignoring[i] && bActive[7] && !bActive[6]) {
+              // writes the phase number (1,2,3) and the measured phase time (to the nearest 100th of a second) to a new line in the file
+              timeStamp = round(msTime[i]/10.0);
+              timeStamp = timeStamp / 100; // if done in one line then it truncates to the nearest second as acting as an integer
+              outputData.println(i+1 + "," + timeStamp);
+            }
+          }
         }
       }
     }
   }
-}
 
-void resetTiming(byte winNum){ // serst the timing window variables when they are no longer valid e.g., after calibration
+
+void resetTiming(byte winNum) { // serst the timing window variables when they are no longer valid e.g., after calibration
   msTime[winNum] = 0; // reset the current time
   start[winNum] = 0; // reset the last cycle time
   average[winNum] = 0; // reset the average cycle time

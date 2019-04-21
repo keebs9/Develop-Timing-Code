@@ -23,7 +23,7 @@ float oX; // stores an intermediate previous x-position as the frame is built-up
 float oY; // stores an intermediate previous pressure value as the frame is built-up
 float incY; // stores the sub-frame increment of the Y-value
 float incX; // stores the sub-frame increment of the X-value
-long msNow; // stores the current time since program start in milliseconds
+int msNow; // stores the current time since program start in milliseconds
 
 void setup() {
   // this section of code runs once at start-up, it configures the serial port and screen for use 

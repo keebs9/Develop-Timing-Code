@@ -22,8 +22,8 @@ void updateTimingData() { // updates the timg values displayed for each timing w
     sTime = sTime /100; // now divide the 100ths of seconds by 100 to get decimal seconds to 1dp
     
     //convert average time from milliseconds to seconds with 1 decimal point
-    aTime = round(average[i]/20.0); // rounds the milliseconds to the nearest 50th of a second (note round yields a whole number)
-    aTime = aTime /50; // now divide the 50ths of seconds by 50 to get decimal seconds to 1dp
+    aTime = round(average[i]/10.0); // rounds the milliseconds to the nearest 100th of a second (note round yields a whole number)
+    aTime = aTime /100; // now divide the 100ths of seconds by 100 to get decimal seconds to 1dp
        
     fill(textShade); // sets fill colour of the blanking rectangle used to cover previous text
     stroke (textShade); // this must be the same colour as the fill (it is the outside of the rectangle)
