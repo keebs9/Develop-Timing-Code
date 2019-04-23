@@ -41,10 +41,10 @@ void blankAhead(){ // this function draws the blanking box in front of the curre
   stroke(plotFill); // sets the colour of the rectangle perimeter
   strokeWeight(1); // sets the weight of the rectangle perimeter to 1
    
-   if (xPos<2) { // avoids missing the remnants of the previous very left-hand trace
-    rect(lMargin, tMargin, lMargin+3, bMargin); // blanks an area in front of the trace
+   if (xPos<3) { // avoids missing the remnants of the previous very left-hand trace
+    rect(lMargin, tMargin, lMargin+5, bMargin); // blanks an area in front of the trace
     strokeWeight(2); // sets the weight of the stroke back to my default thickness of 2
-    drawGridLines(lMargin,lMargin+5);
+    drawGridLines(lMargin,lMargin+7);
    } else
     if (xPos < (plotWidth-clrWidth-2)) { // has to be -2 or it overlaps R/H scale by 1 pixel
       rect(xPos+lMargin+1, tMargin, xPos+lMargin+clrWidth, bMargin); // blanks an area in front of the trace (added +1 for line thickness)
@@ -72,16 +72,16 @@ void displayPressure() { // displays the live pressure for reference and for cal
   if (clipped) fill(livePressureClipped); // sets the colour of the text when the pressure is outside the range of the scale
   else fill(livePressureText); // sets the colour of the live-pressure text
   textSize(18); // sets the size of the text for the live pressure
-  text(livePressure, rMargin + 50 - (textWidth(livePressure) / 2), bMargin+70); // displays the live pressure centred in the box
+  text(livePressure, rMargin + 50 - (textWidth(livePressure) / 2), bMargin+60); // displays the live pressure centred in the box
   
   livePressure = units[aC]; // sets the live pressure text to that of the current units
   fill(0); // sets the colour of the live-pressure units text to black
   textSize(14); // sets the size of the text for the live pressure units
-  text(livePressure, rMargin + 50 - (textWidth(livePressure) / 2), bMargin+90); // displays the live pressure centred in the box
+  text(livePressure, rMargin + 50 - (textWidth(livePressure) / 2), bMargin+80); // displays the live pressure centred in the box
 }
 
 void drawLivePressureBox(){ // called separately so box can be drawn without pressure data at program start
   fill(livePressureFill); // sets the live pressure box fill colour to the defined colour
   stroke(livePressureOutline); // sets the live pressure box outline colour to the defined colour
-  rect(rMargin+5, bMargin+44, rMargin+105, bMargin+99); // draws the live pressure box
+  rect(rMargin+5, bMargin+40, rMargin+105, bMargin+87); // draws the live pressure box
 }

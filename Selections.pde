@@ -279,10 +279,10 @@ void actionButtons() { // take specific actions depending on which button has be
         drawGridLines(lMargin, rMargin-1); // refresh horizontal gridlines
         drawHorizontalScale(); // redraw the horizontal scale using the selected timebase
         xPos = speed; // resets the x position of the trace to zero + speed to start drawing a new trace (was 0)
-        oldX = 0; // resets the previous x vale to zero too so no spurious line is drawn
+        oldX = 0; // resets the previous x value to zero too so no spurious line is drawn
         oX = 0; // sets the intermediate frame old-x position to 0 too
-        oldY = yPos; // sets the previous y position to the current so no spurious line is drawn
-      }
+        firstLine = true; // Prevents spurious lines due data mismatch between "old" and "current" Y position when new trace starts
+      } //<>//
     }
   }
   // clearPlotArea(); // ensures a clear plot area before updating the buttons
