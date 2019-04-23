@@ -12,8 +12,8 @@ float pressure = 0; // stores the pressure input in pressure units
 float truePressure = 0; // stores the true pressure value in case it is out of range
 byte nConfigs = 5; // defines the number of active configs, note that the last profile [5] holds the new config during calibration
 int msStart; // stores the start time of the program in ms
-int startDelay = 2000; // defines the initial delay before starting measurement (avoids blip as Arduino resets) (was 1700)
-byte fps = 100; // defines the number of frames per second the program should run at (note Arduino sampling rate is 100Hz)
+int startDelay = 1800; // defines the initial delay before starting measurement (avoids blip as Arduino resets) (was 1700)
+byte fps = 60; // defines the number of frames per second the program should run at (note Arduino sampling rate is 100Hz)
 byte subFrames = 20; // defines the number of small plot steps to take in each real frame (must be at least 2)
 // subFrames improves plot appearance in response to rapid changes of vertical position (magnitude)
 float speed = (pW/(15.0*fps)); // defines the scroll speed of the plot (also influenced by frame rate), default is for 15s timespan
@@ -24,6 +24,7 @@ float oY; // stores an intermediate previous pressure value as the frame is buil
 float incY; // stores the sub-frame increment of the Y-value
 float incX; // stores the sub-frame increment of the X-value
 int msNow; // stores the current time since program start in milliseconds
+boolean firstLine = true; // true by default, changed to false after very first plot line drawn (see below) 
 
 void setup() {
   // this section of code runs once at start-up, it configures the serial port and screen for use 
@@ -35,7 +36,7 @@ void setup() {
 
   frameRate(fps); // sets the framerate in frames per second
   noSmooth(); // Processing uses smoothing by default - this causes display issues in this program
-  size(1366, 768); // sets the size of the graphics window AS SIZE won't accept variables!
+  size(1366, 736); // sets the size of the graphics window AS SIZE won't accept variables! (736 to allow for program title bar)
 
   loadCalData(); // load the 4 calibration profiles
   defineButtons(); // initialises the button variables
@@ -46,6 +47,7 @@ void draw() {
   // The "draw" code must contain all graphics output, even if these are within other functions and routines. At the end
   // of the draw code, the graphics are refreshed on the display. This occurs at the the framerate defined in Setup
   msNow = millis();
+  
   if (mousePressed) whatSelected(); // if the left mouse button is being pressed
   else {
     for (byte i=0; i<(totalButtons); i++) { // repeat for the number of buttons
@@ -87,7 +89,7 @@ void serialEvent(Serial myport) {
   if (dataStr != null) { // if there is some data (and so isn't null)
     dataStr = trim(dataStr); // trim function removes any extra spaces
     dataInt = int(split(dataStr, '\t'));
-        
+    
     // maps the pressure vaule from the active ADC channel to the scale using the calibration data
     pressure = map(dataInt[ADC[aC]], minRaw[aC], maxRaw[aC], trueLo[aC], trueHi[aC]);
     truePressure = pressure; // copies the presure value to the true pressure variable, before pressure is constrained to scale
@@ -104,6 +106,10 @@ void advanceTrace() {
   updateTimingData(); // this must be called from within draw NOT serial event (as it has graphics functions)
   blankAhead(); // reinstates the plot area and the gridlines in front of the trace
 
+  if (firstLine) {
+    oY = yPos; // prevents first line being drawn from 0 up to current position when no data for oY (old Y position)
+    firstLine = false; // sets to false as from now on there is data for oY (old Y position)
+  }
   incY = (yPos - oY) / subFrames; // sets an increment value for the y-position
   incX = speed / subFrames; // sets an increment value for the x-position
   cX = oX + incX; // increment the current X position

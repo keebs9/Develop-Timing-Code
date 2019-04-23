@@ -22,7 +22,7 @@ void drawScales() { // a function which draws the vertical plot scale lines, gra
   strokeCap(SQUARE);
   fill(bgFill); // set the fill colour to that of the background
   stroke(bgFill); // set the line colour the same as this is used for the ouside of the rectangle
-  rect(rMargin, tMargin-10, winXpos-1, bMargin+10); // blanks the area of the scale (was rMargin+10)
+  rect(rMargin, tMargin-10, winXpos-1, bMargin+6); // blanks the area of the scale (was rMargin+10)
   
   if (lScale[aC] <0 && uScale[aC] >=0) { // if the lower scale is negative & the top scsale positive...
     // the numerical gap between divisions equals the sum of the absolute scale limits e.g., -20 to 40 = 60
@@ -69,10 +69,10 @@ void drawHorizontalScale(){
   float textX = 0; // stores the left hand edge of the text position, set automatically below
   
   stroke(gratColour); // sets the colour of the graticules
-  line(lMargin, plotHeight+tMargin+11, rMargin, plotHeight+tMargin+11);
+  line(lMargin, plotHeight+tMargin+9, rMargin, plotHeight+tMargin+9);
   
   while(int(i)<=plotWidth) { // repeat the loop until i is greater than the plotwidth
-    line(lMargin+i, plotHeight+tMargin+10, lMargin+i, plotHeight+tMargin+26); // draws a second (s) division at the current position
+    line(lMargin+i, plotHeight+tMargin+8, lMargin+i, plotHeight+tMargin+24); // draws a second (s) division at the current position
     i += (speed*fps); // increment i by the number of frames per second, putting it at the x-position of the next whole second
   }
   
@@ -82,7 +82,7 @@ void drawHorizontalScale(){
   textOut = "The plot width spans " + str(round(i/fps/speed)) + " seconds"; // sets the text to be printed on the screen
   textX = lMargin + (plotWidth/2) - (textWidth(textOut) / 2); // sets the start of the text X position based on the lenght of the text
   fill(labelColour); // sets the text colour to black
-  text(textOut, textX, plotHeight+tMargin+50); // states the purpose of the horizontal graticules
+  text(textOut, textX, plotHeight+tMargin+45); // states the purpose of the horizontal graticules
 }
 
 void selectTimebase(){

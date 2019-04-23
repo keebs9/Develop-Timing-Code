@@ -1,12 +1,12 @@
 // declare variables which define the screen layout
 int progWidth = 1366; // defines the width of the entire program window
-int progHeight = 768; // defines the height of the entire program window 
+int progHeight = 736; // defines the height of the entire program window (was 768 but title bar is on top of this)
 int plotWidth = pW; // defines  the width of the display window
 int plotHeight = 514; // defines  the height of the display, 514 is due to thickness of trace (was 513)
 
 int lMargin = 40; // defines the width & so the position of the left margin
 int rMargin = lMargin + plotWidth; // defines the position of the right margin (from 0)
-int tMargin = 130; // defines the height & so the position of the top margin
+int tMargin = 125; // defines the height & so the position of the top margin
 int bMargin = tMargin + plotHeight; // defines the position of the bottom margin (from 0)
 
 int bgFill = 190; // defines the greyscale colour of the background

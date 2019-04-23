@@ -33,7 +33,7 @@ void defineButtons(){
   
   // define button one (2 window selection)
   bX1[0] = lMargin; // top left corner (x)
-  bY1[0] = 20; // top left corner (y)
+  bY1[0] = 15; // top left corner (y)
   bX2[0] = bX1[0] + 100; // bottom right corner (x)
   bY2[0] = bY1[0] + 30; // bottom right corner (y)
   bPress[0] = false;
@@ -58,7 +58,7 @@ void defineButtons(){
   bY2[2] = bY1[2] + 55; // bottom right corner (y)
   bPress[2] = false;
   bHeld[2] = false;
-  bActive[2] = true; // the default is to ignore transients
+  bActive[2] = false; // the default is NOT to ignore transients
   bText[2] = "Ignore" + '\n' + "transients"; // the '/n' adds a new line command to the string
   
   // define button four (calibraiton)
@@ -70,7 +70,7 @@ void defineButtons(){
   
   // define button five (Time base)
   bX1[4] = 410; // top left corner (x)
-  bY1[4] = progHeight -55; // top left corner (y)
+  bY1[4] = progHeight -40; // top left corner (y)
   bX2[4] = bX1[4] + 90; // bottom right corner (x)
   bY2[4] = bY1[4] + 30; // bottom right corner (y)
   bPress[4] = false;
