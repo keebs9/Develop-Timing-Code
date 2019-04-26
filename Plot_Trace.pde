@@ -1,4 +1,7 @@
 // declare variables used for drawing the plot
+byte damping = 20; // defines how many frames to count before updating the live pressure - acts to damp the reading
+byte dampingCounter = 0; // stores the current frame count, when equal to 'damping' the pressure will update
+float greatest; // stores the highest magnitude value of the 2 scales i.e., of -30 and + 20 the value stored will be +30
 int traceColour = 10; // defines the colour of the trace when not in a timing window
 int livePressureFill = 255; // defines the fill colour of the live-pressure window
 int livePressureOutline = #0A0ABE; // defines the colour of the live-pressure window outline
@@ -32,7 +35,6 @@ void drawPlot() { // a function used to draw the pressure plot on the plot windo
      
   strokeCap(SQUARE); // resets sroke cap for rest of the program
   strokeWeight(2); // resets line thickness for rest of the program}
-  displayPressure(); // updates the live pressure display below the scale
 }
 
 void blankAhead(){ // this function draws the blanking box in front of the current trace position & re-draws the scale lines in that area
@@ -67,21 +69,34 @@ void clearPlotArea() { // clear the whole plot area
 }
 
 void displayPressure() { // displays the live pressure for reference and for calibration verification
-  drawLivePressureBox(); // draws the live pressure box, overwriting previous pressure text
-  livePressure = nfp(truePressure, 0, 2); // truncates the pressure to 2 decimal places
-  if (clipped) fill(livePressureClipped); // sets the colour of the text when the pressure is outside the range of the scale
-  else fill(livePressureText); // sets the colour of the live-pressure text
-  textSize(18); // sets the size of the text for the live pressure
-  text(livePressure, rMargin + 50 - (textWidth(livePressure) / 2), bMargin+60); // displays the live pressure centred in the box
-  
-  livePressure = units[aC]; // sets the live pressure text to that of the current units
-  fill(0); // sets the colour of the live-pressure units text to black
-  textSize(14); // sets the size of the text for the live pressure units
-  text(livePressure, rMargin + 50 - (textWidth(livePressure) / 2), bMargin+80); // displays the live pressure centred in the box
+  dampingCounter ++; // increment the damping counter by 1
+  if (dampingCounter == damping) {
+    dampingCounter = 0; // reset the damping counter
+    
+    drawLivePressureBox(); // draws the live pressure box, overwriting previous pressure text
+    
+    greatest = abs(lScale[aC]);
+    if (greatest < abs(uScale[aC])) greatest = uScale[aC];
+    if (greatest < 10 ) livePressure = nfp(truePressure, 0, 2); // #.xx
+    else
+    if (greatest < 100) livePressure = nfp(truePressure, 0, 1); // #.x
+    else
+    livePressure = nfp(round(truePressure), 0, 0); // #
+    
+    if (clipped) fill(livePressureClipped); // sets the colour of the text when the pressure is outside the range of the scale
+    else fill(livePressureText); // sets the colour of the live-pressure text
+    textSize(18); // sets the size of the text for the live pressure
+    text(livePressure, rMargin + 50 - (textWidth(livePressure) / 2), bMargin+60); // displays the live pressure centred in the box
+    
+    livePressure = units[aC]; // sets the live pressure text to that of the current units
+    fill(0); // sets the colour of the live-pressure units text to black
+    textSize(14); // sets the size of the text for the live pressure units
+    text(livePressure, rMargin + 50 - (textWidth(livePressure) / 2), bMargin+80); // displays the live pressure centred in the box
+  }
 }
 
 void drawLivePressureBox(){ // called separately so box can be drawn without pressure data at program start
-  fill(livePressureFill); // sets the live pressure box fill colour to the defined colour
-  stroke(livePressureOutline); // sets the live pressure box outline colour to the defined colour
-  rect(rMargin+5, bMargin+40, rMargin+105, bMargin+87); // draws the live pressure box
+    fill(livePressureFill); // sets the live pressure box fill colour to the defined colour
+    stroke(livePressureOutline); // sets the live pressure box outline colour to the defined colour
+    rect(rMargin+5, bMargin+40, rMargin+105, bMargin+87); // draws the live pressure box
 }

@@ -70,6 +70,7 @@ void draw() {
   }
   else if (msNow > msStart + startDelay){ // if not in any special mode & not in start-up delay, draw usual screen
     advanceTrace();  // progress the X position of the trace
+    displayPressure(); // updates the live pressure display below the scale
     drawScales(); // refresh the left & right scales as the plot line thickness means it can encroach over them
   }
   

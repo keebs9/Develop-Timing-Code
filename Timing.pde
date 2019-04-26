@@ -27,7 +27,7 @@ float[] totTime = new float[3]; // stores the accumulated total time spent withi
 boolean[] winActive = new boolean[3]; // true if the timing windows is currently active i.e., if timing already begun)
 boolean[] ignoring = new boolean[3]; // true if the timing windows is being ignored because the time < transient period
 int transTime = 100; // defines the duration in ms of transient timings which are to be ignored
-boolean ignore = true; // mirrors the current windows ifnoring flag (shorter syntax that referencing actual flag)
+boolean ignore = false; // mirrors the current windows ifnoring flag (shorter syntax that referencing actual flag)
 boolean updateStartNextButton = false; // when true if flags the button to be refreshed within the draw loop 
 
 void timing() { // acquire & set time stamps when the current pressure is within a monitored window (range)
@@ -59,8 +59,9 @@ void timing() { // acquire & set time stamps when the current pressure is within
     } else { // if the current pressure is outside the window but was within the window in the last pass then...
         if (winActive[i]) { // if the window was being timed then...
           winActive[i] = false; // set the window timing status to inactive
-  
+            
           if (!startNext) { // if not watinig for a cycle change before beginning the timing...
+            msTime[i] = msNow2 - start[i]; // increase the timing duration of the window
             count[i] ++; // increase the number of cycles which have been counted for this window
             totTime[i] += msTime[i]; // increments the total time for this window by the current time (only when pressure exits the window)
             average[i] = round(totTime[i] / count[i]); // updates the average time by dividing total time by cycle count
