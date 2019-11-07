@@ -1,5 +1,5 @@
-// The purpose of this program is to time 2 or 3 pressure phases, as defined by the user. To enable this
-// a transucer calibration process is requried (including daving data), and a user interface to allow customisation.
+/* The purpose of this program is to time 2 or 3 pressure phases, as defined by the user. To enable this
+   a transucer calibration process is requried (including daving data), and a user interface to allow customisation. */
 
 import processing.serial.Serial; // imports the additional functionality of the serial command set
 Serial myport; // create a serial object
@@ -89,10 +89,11 @@ void serialEvent(Serial myport) {
   
   if (dataStr != null) { // if there is some data (and so isn't null)
     dataStr = trim(dataStr); // trim function removes any extra spaces
-    dataInt = int(split(dataStr, '\t'));
+    dataInt = int(split(dataStr, '\t')); // the data is read & transmitted from both channels & here is split into 2 parts
     
     // maps the pressure vaule from the active ADC channel to the scale using the calibration data
     pressure = map(dataInt[ADC[aC]], minRaw[aC], maxRaw[aC], trueLo[aC], trueHi[aC]);
+    
     truePressure = pressure; // copies the presure value to the true pressure variable, before pressure is constrained to scale
     clipped = (pressure > uScale[aC] || pressure < lScale[aC]); // clipped flag if pressure outside current visible scale
     

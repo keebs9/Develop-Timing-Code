@@ -132,29 +132,28 @@ void defineButtons(){
   bY1[nButtons] = tMargin + 180; // top left corner (y)
   bX2[nButtons] = lMargin + 290; // bottom right corner (x)
   bY2[nButtons] = tMargin + 210; // bottom right corner (y)
-  bText[nButtons] = "cmH2O"; // holds the unit text
-  units[aC] = bText[nButtons]; // sets the currently displayed units to cmH2O
-   
-  // define 2nd calibration button (mBar)
+  bText[nButtons] = "cmH2O"; // holds the default unit name
+     
+  // define 2nd calibration button (original default was mBar)
   bX1[nButtons+1] = rMargin - 290; // top left corner (x)
   bY1[nButtons+1] = tMargin + 180; // top left corner (y)
   bX2[nButtons+1] = rMargin - 190; // bottom right corner (x)
   bY2[nButtons+1] = tMargin + 210; // bottom right corner (y)
-  bText[nButtons+1] = "mBar"; // holds the unit text
+  bText[nButtons+1] = "mBar"; // holds the default unit name
   
-  // define 4rd calibration button (mmHg)
+  // define 4rd calibration button (original default was mmHg)
   bX1[nButtons+2] = lMargin + 190; // top left corner (x)
   bY1[nButtons+2] = tMargin + 300; // top left corner (y)
   bX2[nButtons+2] = lMargin + 290; // bottom right corner (x)
   bY2[nButtons+2] = tMargin + 330; // bottom right corner (y)
-  bText[nButtons+2] = "mmHg"; // holds the unit text
+  bText[nButtons+2] = "mmHg"; // holds the default unit name
   
-  // define 4th calibration button (PSI)
+  // define 4th calibration button (original default was PSI)
   bX1[nButtons+3] = rMargin - 290; // top left corner (x)
   bY1[nButtons+3] = tMargin + 300; // top left corner (y)
   bX2[nButtons+3] = rMargin - 190; // bottom right corner (x)
   bY2[nButtons+3] = tMargin + 330; // bottom right corner (y)
-  bText[nButtons+3] = "PSI";  // holds the unit text
+  bText[nButtons+3] = "PSI";  // holds the default unit name
   
   // define 5th calibration button (Low Range)
   bX1[nButtons+4] = lMargin + 250; // top left corner (x)
