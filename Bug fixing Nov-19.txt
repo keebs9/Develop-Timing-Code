@@ -1,0 +1,41 @@
+If all the units are set the same in the profile, how can you choose units?
+
+Places to change program:
+1) When displaying the choices for calibration units
+2) When loading the data, load into profiles but not the buttons
+3) When it is referenced to draw scales and live pressure etc.
+4) Possibly! When saving the profile after calibration
+
+Possible code:
+// store the available units in each of the buttons (will be restored to current profiles later)
+  for (byte i=0; i<4; i++){ // repeat for each of 4 possible unit names
+    bText[i] = units[i];
+  }
+
+Where "units[]" used:
+Set to the value of bText in Button_Setup {units[aC] = bText[nButtons];}
+Used as display text in unit selection during calibration {"in " + units[nConfigs-1]}
+Set to value of bText after cal data loaded {units[i] = bText[i+nButtons];}
+Used as text for live pressure in Plot_Trace tab {livePressure = units[aC];}
+Used as text for the scales in Scales tab {text(nVal + " " + units[aC]}
+Set to value of bText in Selections tab when in cal mode {units[nConfigs-1] = bText[j];}
+
+Where "bText[]" used:
+Defined in Button setup as default values i.e., cmH2O, mBar, mmHg, PSI
+Used as text to list data sets during load & save operations (existing data not default units)
+Used in drawButtons routine in ScreenSetup tab
+Used to set units[4] text during calibration
+
+In summary:
+units[] are used routinely for display purposes so should represent the actual units which could all be the same. During calibration, the 4 standard button texts are required when choosing the untis.
+
+Moved setting of units[aC] (meaining active profile) to end of loadCalData function.
+
+Load / Save / Cal working ok units wise
+
+**********Channel problem**********
+ADC stores the cahnnel number and should be 0 for low range or 1 for high range
+When acquiring pressure the value is set to dataInt[ADC[aC]]
+Fixed acquiring data from wrong pressure channel
+
+If you load a high range dataset then change the scale and save over a low range dataset, then the range incorrectly changes to the low range. FIXED!!!!!!! Just added a line to copy the channel number across. This was absent as the channel number was a late addition to the program.

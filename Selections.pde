@@ -253,6 +253,7 @@ void actionButtons() { // take specific actions depending on which button has be
         bHeld[j] = true; // set the button Held to true meaning it was already pressed and actioned
         if (j<grp3-1) { // if not the "don't save" button which has been pressed & in save mode...
           if (calStage == 8) { // if in the save mode rather than the load mode...
+            units[j- grp2] = units[nConfigs-1]; // set the selected dataset units
             minRaw[j- grp2] = minRaw[nConfigs-1]; // set the selected dataset to the new value
             maxRaw[j- grp2] = maxRaw[nConfigs-1]; // set the selected dataset to the new value
             lScale[j- grp2] = lScale[nConfigs-1]; // set the selected dataset to the new value
@@ -267,7 +268,7 @@ void actionButtons() { // take specific actions depending on which button has be
         if (calStage == 8 && j == grp3-1) aC = j-grp2; // sets the active config to the temporary set stored in set 5 (if not saving)
         calStage++; // move on to the next calibration stage
       }
-    }
+    } //<>//
 
 // specifically deals with the timebase buttons (21-26)    
   } else if (bActive[4]) { // if the timebase button has been selected...
@@ -282,7 +283,7 @@ void actionButtons() { // take specific actions depending on which button has be
         oldX = 0; // resets the previous x value to zero too so no spurious line is drawn
         oX = 0; // sets the intermediate frame old-x position to 0 too
         firstLine = true; // Prevents spurious lines due data mismatch between "old" and "current" Y position when new trace starts
-      } //<>//
+      }
     }
   }
   // clearPlotArea(); // ensures a clear plot area before updating the buttons

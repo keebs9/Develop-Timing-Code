@@ -11,16 +11,16 @@ float kbVal = 0; // stores the numerical value of the user-inputted number held 
 String topBot = ""; // stores the contextual wording for the calibration text e.g., minimum or maximum
 
 void drawCalScreen() { // a routine to take the user through a calibration process
-// the flow and principles of this calibraion process are:
-// to allow selection of the pressure channel, wither low or high range
-// to allow selection of the correct pressure units
-// to associate a true low pressure reading with a low raw digital value from the sensor / Arduino
-// to associate a true high pressure reading with a high raw digital value from the sensor / Arduino
-// scales are suggested slightly wider than the readings to allow for some out-of-range measurement
-// the scales can be set to whatever the user wants without affecting accuracy (signal may clip or not reach limits)
-// calibration can be done at ANY low and high pressure as it just determines a relationship and linear slope
-// best practice shall be to calibrate at as low and high pressure as possible, for best accuracy
-// accuracy is also determined by the accuracy of the pressure meter used & the skill of the operator
+/* the flow and principles of this calibraion process are:
+   to allow selection of the pressure channel, wither low or high range
+   to allow selection of the correct pressure units
+   to associate a true low pressure reading with a low raw digital value from the sensor / Arduino
+   to associate a true high pressure reading with a high raw digital value from the sensor / Arduino
+   scales are suggested slightly wider than the readings to allow for some out-of-range measurement
+   the scales can be set to whatever the user wants without affecting accuracy (signal may clip or not reach limits)
+   calibration can be done at ANY low and high pressure as it just determines a relationship and linear slope
+   best practice shall be to calibrate at as low and high pressure as possible, for best accuracy
+   accuracy is also determined by the accuracy of the pressure meter used & the skill of the operator */
 
   if (enter) { // if the enter key has been pressed...
     if (bActive[5] && calStage ==4) {
@@ -88,8 +88,8 @@ void requestPressure(){
 void getPressure(){
   // this calibration step reads the user keyboard input to define the pressure in the selected units
   high = calStage == 6; // high is true if at calibtaion stage 6, if stage 3 then high is false (low calibration)
-  if (high) maxRaw[nConfigs-1] = dataInt[ADC[aC]]; // sets maxRaw to value of the raw data input e.g., 0..1023 when calibrating upper scale
-  else minRaw[nConfigs-1] = dataInt[ADC[aC]]; // sets minRaw to value of the raw data input e.g., 0..1023 when calibrating lower scale
+  if (high) maxRaw[nConfigs-1] = dataInt[ADC[nConfigs-1]]; // sets maxRaw to value of the raw data input e.g., 0..1023 when calibrating upper scale
+  else minRaw[nConfigs-1] = dataInt[ADC[nConfigs-1]]; // sets minRaw to value of the raw data input e.g., 0..1023 when calibrating lower scale
   
   // set the font colour & print the instructional calibration text
   textSize(30); // sets the font size for the calibration screen text
@@ -117,6 +117,7 @@ void setScaleLimits() {
       trueLo[nConfigs-1] = trueLo[aC];
       trueHi[nConfigs-1] = trueHi[aC];
       units[nConfigs-1] = units[aC];
+      ADC[nConfigs-1] = ADC[aC];
     }
     else if (bActive[3]) { // if in full calibration mode...
       if (high) trueHi[nConfigs-1] = kbVal; // assign the current value to the temporary (set 5) true upper calibration pressure
